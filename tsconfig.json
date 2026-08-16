@@ -1,0 +1,40 @@
+// tsconfig.json
+
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "target": "ES2023",
+
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "declaration": true,
+    "removeComments": true,
+
+    "sourceMap": true,
+
+    "incremental": true,
+
+    "skipLibCheck": true,
+
+    "forceConsistentCasingInFileNames": true,
+
+    "noFallthroughCasesInSwitch": true,
+
+    "moduleDetection": "force",
+
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+
+    "useDefineForClassFields": true
+  }
+}
