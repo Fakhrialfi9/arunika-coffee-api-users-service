@@ -1,98 +1,205 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Arunika Coffee Users Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Project purpose
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+`arunika-coffee-api-users-service` is the NestJS foundation for the Arunika Coffee Users Service. It is a separate repository from the future API Gateway/Main application and will eventually own the Users domain and `arunika_coffee_users` database.
 
-## Description
+This repository is currently at **Step 01 — Project Foundation** only.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Architecture boundary
 
-## Project setup
-
-```bash
-$ npm install
+```text
+Client
+  |
+  v
+API Gateway / Main (separate repository)
+  |
+  | future gRPC communication
+  v
+Users Service (this repository)
+  |
+  | future database access
+  v
+MySQL: arunika_coffee_users
 ```
 
-## Compile and run the project
+The repositories remain separate:
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```text
+arunika-coffee/
+├── arunika-coffee-api-main/
+└── arunika-coffee-api-users-service/
 ```
 
-## Run tests
+The conceptual root above is documentation only; these are **not** a monorepo or npm workspace.
+
+## Current scope: Step 01
+
+Implemented:
+
+- NestJS + TypeScript foundation
+- strict TypeScript configuration
+- ESLint and Prettier
+- environment/configuration boundary
+- Node.js 22.x and npm configuration
+- basic NestJS bootstrap
+- foundation test runner
+- development/build/lint/format commands
+- architecture and scope documentation
+
+Not implemented yet:
+
+- Users CRUD
+- database connection or schema
+- Prisma or another ORM
+- repositories
+- Users domain/application layers
+- gRPC server
+- gRPC CRUD contract
+- API Gateway implementation
+- authentication
+- authorization
+- audit logging
+- observability
+- production deployment
+
+These belong to later roadmap steps and must not be implemented prematurely.
+
+## Prerequisites
+
+- Node.js 22 LTS
+- npm 11.18.0
+
+Use `.nvmrc` to select the project's Node.js major version.
+
+## Installation
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+For a clean reproducible installation from the lockfile:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm ci
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Environment
 
-## Resources
+Copy `.env.example` to `.env` for local development.
 
-Check out a few resources that may come in handy when working with NestJS:
+Required foundation variables:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+| Variable | Purpose | Example |
+| --- | --- | --- |
+| `APP_NAME` | Application name | `users-service` |
+| `NODE_ENV` | Runtime environment | `development` |
+| `APP_HOST` | HTTP bootstrap host | `127.0.0.1` |
+| `APP_PORT` | HTTP bootstrap port | `3000` |
+| `GRPC_HOST` | Future gRPC host placeholder | `127.0.0.1` |
+| `GRPC_PORT` | Future gRPC port placeholder | `50051` |
+| `DB_NAME` | Future database name placeholder | `arunika_coffee_users` |
 
-## Support
+Environment strategy:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- `development` — local development
+- `test` — automated test execution
+- `production` — production runtime configuration
 
-## Stay in touch
+Step 01 only establishes the configuration boundary. It does not connect to MySQL or start a gRPC server.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Development
 
-## License
+```bash
+npm run start
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Watch mode:
+
+```bash
+npm run start:dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Lint and type checking
+
+```bash
+npm run lint
+npm run typecheck
+```
+
+## Formatting
+
+```bash
+npm run format
+npm run format:check
+```
+
+## Testing
+
+```bash
+npm test
+```
+
+Coverage:
+
+```bash
+npm run test:coverage
+```
+
+Full foundation verification:
+
+```bash
+npm run check
+```
+
+## Future proto boundary
+
+The future shared proto location is conceptually:
+
+```text
+proto/
+└── users/
+    └── users.proto
+```
+
+No CRUD gRPC contract is created during Step 01. The `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, and `DeleteUser` methods belong to Step 12.
+
+## Repository workflow
+
+Development for this roadmap is performed directly on the `main` branch. Feature branches and pull requests are intentionally outside the requested workflow.
+
+## Roadmap
+
+1. Project Foundation — current
+2. Architecture
+3. Database Foundation
+4. Users Schema
+5. ORM / Repository
+6. Users Domain
+7. Create User
+8. Read User
+9. Update User
+10. Delete User
+11. CRUD Validation
+12. gRPC Contract
+13. Users gRPC Server
+14. gRPC Integration Test
+15. API Gateway
+16. Gateway Users CRUD
+17. Error Handling
+18. Authentication
+19. Authorization
+20. User Security
+21. Audit Logging
+22. Observability
+23. Testing & Hardening
+24. Production Hardening
+25. Deployment & Final Audit
+
+Only the current roadmap step should be implemented at a time.

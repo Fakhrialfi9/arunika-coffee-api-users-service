@@ -10,33 +10,21 @@
     "node": "22.x"
   },
   "scripts": {
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio",
-    "prisma:seed": "prisma db seed",
-    "fresh": "bash scripts/fresh-install.sh",
-    "clean:hard": "bash scripts/hard-clean.sh",
-    "clean:soft": "bash scripts/soft-clean.sh",
-    "clean": "rm -rf dist node_modules/.cache generated tsconfig.build.tsbuildinfo && npm run clean:soft",
-    "build": "nest build && npm run prisma:generate && nest build --path tsconfig.build.json",
+    "clean": "rm -rf dist coverage .nestjs node_modules/.cache && find . -name '*.tsbuildinfo' -delete",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/main.js",
+    "build": "nest build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"*.mjs\" \"*.json\" \"README.md\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"*.mjs\" \"*.json\" \"README.md\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:unit": "vitest run --config vitest.config.ts",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "test:coverage": "vitest run --coverage",
-    "test:coverage:e2e": "vitest run --config vitest.e2e.config.ts --coverage",
-    "test:all": "npm run test:unit && npm run test:e2e",
-    "check:health": "npm run lint && npm run typecheck && npm run test && npm run format && npm run format:check && npm run build",
-    "check:fresh": "npm run clean && npm install && npm run check:health"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build",
+    "fresh": "bash scripts/fresh-install.sh"
   },
   "dependencies": {
     "@grpc/grpc-js": "1.14.4",
@@ -90,22 +78,5 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.67.0",
     "vitest": "4.1.10"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }
