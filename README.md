@@ -90,15 +90,15 @@ Copy `.env.example` to `.env` for local development.
 
 Required foundation variables:
 
-| Variable | Purpose | Example |
-| --- | --- | --- |
-| `APP_NAME` | Application name | `users-service` |
-| `NODE_ENV` | Runtime environment | `development` |
-| `APP_HOST` | HTTP bootstrap host | `127.0.0.1` |
-| `APP_PORT` | HTTP bootstrap port | `3000` |
-| `GRPC_HOST` | Future gRPC host placeholder | `127.0.0.1` |
-| `GRPC_PORT` | Future gRPC port placeholder | `50051` |
-| `DB_NAME` | Future database name placeholder | `arunika_coffee_users` |
+| Variable    | Purpose                          | Example                |
+| ----------- | -------------------------------- | ---------------------- |
+| `APP_NAME`  | Application name                 | `users-service`        |
+| `NODE_ENV`  | Runtime environment              | `development`          |
+| `APP_HOST`  | HTTP bootstrap host              | `127.0.0.1`            |
+| `APP_PORT`  | HTTP bootstrap port              | `3000`                 |
+| `GRPC_HOST` | Future gRPC host placeholder     | `127.0.0.1`            |
+| `GRPC_PORT` | Future gRPC port placeholder     | `50051`                |
+| `DB_NAME`   | Future database name placeholder | `arunika_coffee_users` |
 
 Environment strategy:
 

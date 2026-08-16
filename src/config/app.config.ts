@@ -34,15 +34,12 @@ const parseEnvironment = (
   return 'development';
 };
 
-export const appConfig = registerAs(
-  'app',
-  (): AppConfig => ({
-    name: process.env.APP_NAME ?? 'users-service',
-    environment: parseEnvironment(process.env.NODE_ENV),
-    host: process.env.APP_HOST ?? '127.0.0.1',
-    port: parsePort(process.env.APP_PORT, 3000),
-    grpcHost: process.env.GRPC_HOST ?? '127.0.0.1',
-    grpcPort: parsePort(process.env.GRPC_PORT, 50051),
-    databaseName: process.env.DB_NAME ?? 'arunika_coffee_users',
-  }),
-);
+export const appConfig = registerAs('app', (): AppConfig => ({
+  name: process.env.APP_NAME ?? 'users-service',
+  environment: parseEnvironment(process.env.NODE_ENV),
+  host: process.env.APP_HOST ?? '127.0.0.1',
+  port: parsePort(process.env.APP_PORT, 3000),
+  grpcHost: process.env.GRPC_HOST ?? '127.0.0.1',
+  grpcPort: parsePort(process.env.GRPC_PORT, 50051),
+  databaseName: process.env.DB_NAME ?? 'arunika_coffee_users',
+}));
