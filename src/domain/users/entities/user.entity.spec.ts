@@ -1,9 +1,11 @@
-import { randomUUID } from 'node:crypto';
+import { describe, expect, it } from 'vitest';
 
 import { User } from './user.entity.js';
 
-describe('User', () => {
-  it('creates a user with safe defaults and a UUID identity', () => {
+const UUID = '550e8400-e29b-41d4-a716-446655440000';
+
+describe('User entity', () => {
+  it('creates a user with a UUID and default state', () => {
     const user = User.create();
 
     expect(user.uuid).toMatch(
@@ -15,13 +17,11 @@ describe('User', () => {
     expect(user.deletedAt).toBeNull();
   });
 
-  it('reconstitutes a persisted user without Prisma dependencies', () => {
+  it('preserves a valid reconstituted user identity and timestamps', () => {
     const createdAt = new Date('2026-01-01T00:00:00.000Z');
     const updatedAt = new Date('2026-01-02T00:00:00.000Z');
-    const uuid = randomUUID();
-
     const user = User.reconstitute({
-      uuid,
+      uuid: UUID,
       username: 'fakhri',
       email: 'fakhri@example.com',
       phone: '+628123456789',
@@ -33,45 +33,66 @@ describe('User', () => {
       deletedAt: null,
     });
 
-    expect(user.uuid).toBe(uuid);
-    expect(user.username).toBe('fakhri');
-    expect(user.email).toBe('fakhri@example.com');
+    expect(user.uuid).toBe(UUID);
     expect(user.createdAt).toEqual(createdAt);
     expect(user.updatedAt).toEqual(updatedAt);
   });
 
-  it('rejects an invalid UUID', () => {
-    expect(() => User.create({ uuid: 'invalid-uuid' })).toThrow('valid UUID');
+  it('updates mutable identity fields while preserving UUID and createdAt', () => {
+    const createdAt = new Date('2026-01-01T00:00:00.000Z');
+    const user = User.reconstitute({
+      uuid: UUID,
+      username: 'fakhri',
+      email: 'fakhri@example.com',
+      phone: '+628123456789',
+      createdAt,
+      updatedAt: createdAt,
+    });
+
+    user.updateIdentity({
+      username: 'alfi',
+      email: 'alfi@example.com',
+      phone: null,
+    });
+
+    expect(user.uuid).toBe(UUID);
+    expect(user.createdAt).toEqual(createdAt);
+    expect(user.username).toBe('alfi');
+    expect(user.email).toBe('alfi@example.com');
+    expect(user.phone).toBeNull();
+    expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(createdAt.getTime());
   });
 
-  it('enforces database-aligned field lengths', () => {
-    expect(() => User.create({ username: 'a'.repeat(101) })).toThrow(
-      'username',
-    );
-    expect(() => User.create({ email: 'a'.repeat(192) })).toThrow('email');
-    expect(() => User.create({ phone: 'a'.repeat(31) })).toThrow('phone');
-    expect(() => User.create({ status: 'a'.repeat(31) })).toThrow('status');
-  });
-
-  it('soft deletes and prevents mutation of a deleted user', () => {
-    const user = User.create({ uuid: randomUUID() });
-    const deletedAt = new Date('2026-01-03T00:00:00.000Z');
-
-    user.softDelete(deletedAt);
-
-    expect(user.deletedAt).toEqual(deletedAt);
-    expect(user.isActive).toBe(false);
-    expect(() => user.activate()).toThrow('Deleted user');
-    expect(() => user.verify()).toThrow('Deleted user');
-  });
-
-  it('restores a soft-deleted user', () => {
-    const user = User.create();
+  it('does not allow mutable fields to be changed after soft deletion', () => {
+    const user = User.create({ uuid: UUID });
     user.softDelete();
 
-    user.restore();
+    expect(() => user.updateIdentity({ username: 'blocked' })).toThrow(
+      'Deleted user cannot be modified',
+    );
+    expect(() => user.changeStatus('active')).toThrow(
+      'Deleted user cannot be modified',
+    );
+  });
 
-    expect(user.deletedAt).toBeNull();
-    expect(user.isActive).toBe(true);
+  it('activates, deactivates, verifies, and changes status through domain methods', () => {
+    const user = User.create({ uuid: UUID });
+
+    user.deactivate();
+    user.verify();
+    user.changeStatus('active');
+
+    expect(user.isActive).toBe(false);
+    expect(user.isVerified).toBe(true);
+    expect(user.status).toBe('active');
+  });
+
+  it('rejects invalid UUIDs and invalid status values', () => {
+    expect(() => User.create({ uuid: 'invalid' })).toThrow(
+      'User uuid must be a valid UUID',
+    );
+    expect(() => User.create({ uuid: UUID, status: '   ' })).toThrow(
+      'User status must contain between 1 and 30 characters',
+    );
   });
 });

@@ -41,27 +41,45 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record === null ? null : this.toDomain(record);
   }
 
-  async existsByUsername(username: string): Promise<boolean> {
-    const record = await this.prisma.authenticationUser.findUnique({
-      where: { username },
+  async existsByUsername(
+    username: string,
+    excludeUuid?: string,
+  ): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findFirst({
+      where: {
+        username,
+        ...(excludeUuid === undefined ? {} : { uuid: { not: excludeUuid } }),
+      },
       select: { id: true },
     });
 
     return record !== null;
   }
 
-  async existsByEmail(email: string): Promise<boolean> {
-    const record = await this.prisma.authenticationUser.findUnique({
-      where: { email },
+  async existsByEmail(
+    email: string,
+    excludeUuid?: string,
+  ): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findFirst({
+      where: {
+        email,
+        ...(excludeUuid === undefined ? {} : { uuid: { not: excludeUuid } }),
+      },
       select: { id: true },
     });
 
     return record !== null;
   }
 
-  async existsByPhone(phone: string): Promise<boolean> {
-    const record = await this.prisma.authenticationUser.findUnique({
-      where: { phone },
+  async existsByPhone(
+    phone: string,
+    excludeUuid?: string,
+  ): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findFirst({
+      where: {
+        phone,
+        ...(excludeUuid === undefined ? {} : { uuid: { not: excludeUuid } }),
+      },
       select: { id: true },
     });
 
@@ -79,10 +97,12 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
   }
 
   async update(user: User): Promise<User> {
-    const record = await this.prisma.authenticationUser.update({
-      where: { uuid: user.uuid },
-      data: this.toUpdateInput(user),
-    });
+    const record = await this.transactions.run((transaction) =>
+      transaction.authenticationUser.update({
+        where: { uuid: user.uuid },
+        data: this.toUpdateInput(user),
+      }),
+    );
 
     return this.toDomain(record);
   }

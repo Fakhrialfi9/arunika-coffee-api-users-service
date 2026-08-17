@@ -3,7 +3,12 @@ import type { User } from '../entities/user.entity.js';
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 
 export type UserListSortField =
-  'createdAt' | 'updatedAt' | 'username' | 'email' | 'status' | 'uuid';
+  | 'createdAt'
+  | 'updatedAt'
+  | 'username'
+  | 'email'
+  | 'status'
+  | 'uuid';
 
 export type UserListSortOrder = 'asc' | 'desc';
 
@@ -31,9 +36,9 @@ export interface UserListResult {
 
 export interface UserRepository {
   findByUuid(uuid: string): Promise<User | null>;
-  existsByUsername(username: string): Promise<boolean>;
-  existsByEmail(email: string): Promise<boolean>;
-  existsByPhone(phone: string): Promise<boolean>;
+  existsByUsername(username: string, excludeUuid?: string): Promise<boolean>;
+  existsByEmail(email: string, excludeUuid?: string): Promise<boolean>;
+  existsByPhone(phone: string, excludeUuid?: string): Promise<boolean>;
   create(user: User): Promise<User>;
   update(user: User): Promise<User>;
   list(filters: UserListFilters): Promise<UserListResult>;

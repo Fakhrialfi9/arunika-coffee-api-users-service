@@ -21,6 +21,12 @@ export interface ReconstituteUserProps extends UserProps {
   updatedAt: Date;
 }
 
+export interface UserIdentityUpdate {
+  username?: string | null;
+  email?: string | null;
+  phone?: string | null;
+}
+
 export class User {
   private constructor(
     private readonly _uuid: string,
@@ -109,6 +115,27 @@ export class User {
       : new Date(this._deletedAt.getTime());
   }
 
+  updateIdentity(changes: UserIdentityUpdate): void {
+    this.ensureNotDeleted();
+
+    if (changes.username !== undefined) {
+      User.validateOptionalString(changes.username, 'username', 100);
+      this._username = changes.username;
+    }
+
+    if (changes.email !== undefined) {
+      User.validateOptionalString(changes.email, 'email', 191);
+      this._email = changes.email;
+    }
+
+    if (changes.phone !== undefined) {
+      User.validateOptionalString(changes.phone, 'phone', 30);
+      this._phone = changes.phone;
+    }
+
+    this.touch();
+  }
+
   activate(): void {
     this.ensureNotDeleted();
     this._isActive = true;
@@ -134,6 +161,7 @@ export class User {
   }
 
   changeStatus(status: UserStatus): void {
+    this.ensureNotDeleted();
     this._status = User.validateStatus(status);
     this.touch();
   }

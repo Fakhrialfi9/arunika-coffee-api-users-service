@@ -5,6 +5,7 @@ import { PrismaAuthenticationUserRepository } from '../../infrastructure/databas
 import { CreateUserService } from './services/create-user.service.js';
 import { GetUserService } from './services/get-user.service.js';
 import { ListUsersService } from './services/list-users.service.js';
+import { UpdateUserService } from './services/update-user.service.js';
 
 @Module({
   providers: [
@@ -15,7 +16,13 @@ import { ListUsersService } from './services/list-users.service.js';
     CreateUserService,
     GetUserService,
     ListUsersService,
+    UpdateUserService,
   ],
-  exports: [CreateUserService, GetUserService, ListUsersService],
+  exports: [
+    CreateUserService,
+    GetUserService,
+    ListUsersService,
+    UpdateUserService,
+  ],
 })
 export class UsersModule {}
