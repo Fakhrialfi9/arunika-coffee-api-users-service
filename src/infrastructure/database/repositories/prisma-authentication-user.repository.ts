@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
-import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
+import type {
+  UserListFilters,
+  UserListResult,
+  UserRepository,
+} from '../../../domain/users/repositories/user.repository.js';
 import { PrismaTransactionService } from '../prisma-transaction.service.js';
 import { PrismaService } from '../prisma.service.js';
 
@@ -81,6 +85,79 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     });
 
     return this.toDomain(record);
+  }
+
+  async list(filters: UserListFilters): Promise<UserListResult> {
+    const where = this.toListWhere(filters);
+    const skip = (filters.page - 1) * filters.limit;
+    const orderBy = [
+      { [filters.sortBy]: filters.sortOrder },
+      { uuid: 'asc' },
+    ] as Prisma.AuthenticationUserOrderByWithRelationInput[];
+
+    const result = await this.transactions.run(async (transaction) => {
+      const [records, total] = await Promise.all([
+        transaction.authenticationUser.findMany({
+          where,
+          skip,
+          take: filters.limit,
+          orderBy,
+        }),
+        transaction.authenticationUser.count({ where }),
+      ]);
+
+      return { records, total };
+    });
+
+    return {
+      items: result.records.map((record) => this.toDomain(record)),
+      page: filters.page,
+      limit: filters.limit,
+      total: result.total,
+      totalPages: Math.ceil(result.total / filters.limit),
+    };
+  }
+
+  private toListWhere(
+    filters: UserListFilters,
+  ): Prisma.AuthenticationUserWhereInput {
+    const where: Prisma.AuthenticationUserWhereInput = {
+      deletedAt: null,
+    };
+
+    if (filters.search !== undefined) {
+      where.OR = [
+        { username: { contains: filters.search } },
+        { email: { contains: filters.search } },
+        { phone: { contains: filters.search } },
+      ];
+    }
+
+    if (filters.username !== undefined) {
+      where.username = filters.username;
+    }
+
+    if (filters.email !== undefined) {
+      where.email = filters.email;
+    }
+
+    if (filters.phone !== undefined) {
+      where.phone = filters.phone;
+    }
+
+    if (filters.status !== undefined) {
+      where.status = filters.status;
+    }
+
+    if (filters.isActive !== undefined) {
+      where.isActive = filters.isActive;
+    }
+
+    if (filters.isVerified !== undefined) {
+      where.isVerified = filters.isVerified;
+    }
+
+    return where;
   }
 
   private toDomain(record: AuthenticationUserRecord): User {
