@@ -2,43 +2,43 @@ import { randomUUID } from 'node:crypto';
 
 import { CreateUserService } from './create-user.service.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';
-import {
-  CreateUserValidationError,
-} from '../errors/create-user-validation.error.js';
+import { CreateUserValidationError } from '../errors/create-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
-import type {
-  UserRepository,
-} from '../../../domain/users/repositories/user.repository.js';
+import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
 
 class InMemoryUserRepository implements UserRepository {
   private readonly users: User[] = [];
 
-  async findByUuid(uuid: string): Promise<User | null> {
-    return this.users.find((user) => user.uuid === uuid) ?? null;
+  findByUuid(uuid: string): Promise<User | null> {
+    return Promise.resolve(
+      this.users.find((user) => user.uuid === uuid) ?? null,
+    );
   }
 
-  async existsByUsername(username: string): Promise<boolean> {
-    return this.users.some((user) => user.username === username);
+  existsByUsername(username: string): Promise<boolean> {
+    return Promise.resolve(
+      this.users.some((user) => user.username === username),
+    );
   }
 
-  async existsByEmail(email: string): Promise<boolean> {
-    return this.users.some((user) => user.email === email);
+  existsByEmail(email: string): Promise<boolean> {
+    return Promise.resolve(this.users.some((user) => user.email === email));
   }
 
-  async existsByPhone(phone: string): Promise<boolean> {
-    return this.users.some((user) => user.phone === phone);
+  existsByPhone(phone: string): Promise<boolean> {
+    return Promise.resolve(this.users.some((user) => user.phone === phone));
   }
 
-  async create(user: User): Promise<User> {
+  create(user: User): Promise<User> {
     this.users.push(user);
-    return user;
+    return Promise.resolve(user);
   }
 
-  async update(user: User): Promise<User> {
+  update(user: User): Promise<User> {
     const index = this.users.findIndex((item) => item.uuid === user.uuid);
     this.users[index] = user;
-    return user;
+    return Promise.resolve(user);
   }
 }
 
@@ -96,9 +96,9 @@ describe('CreateUserService', () => {
     await expect(
       service.execute({ email: 'fakhri@example.com' }),
     ).rejects.toEqual(new UserAlreadyExistsError('email'));
-    await expect(
-      service.execute({ phone: '+628123456789' }),
-    ).rejects.toEqual(new UserAlreadyExistsError('phone'));
+    await expect(service.execute({ phone: '+628123456789' })).rejects.toEqual(
+      new UserAlreadyExistsError('phone'),
+    );
   });
 
   it('does not expose the internal database identifier', async () => {
