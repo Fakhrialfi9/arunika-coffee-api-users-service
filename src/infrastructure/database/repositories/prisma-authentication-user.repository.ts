@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
+import { PrismaTransactionService } from '../prisma-transaction.service.js';
 import { PrismaService } from '../prisma.service.js';
 
 type AuthenticationUserRecord = {
@@ -20,7 +21,10 @@ type AuthenticationUserRecord = {
 
 @Injectable()
 export class PrismaAuthenticationUserRepository implements UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly transactions: PrismaTransactionService,
+  ) {}
 
   async findByUuid(uuid: string): Promise<User | null> {
     const record = await this.prisma.authenticationUser.findUnique({
@@ -30,10 +34,39 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record === null ? null : this.toDomain(record);
   }
 
-  async create(user: User): Promise<User> {
-    const record = await this.prisma.authenticationUser.create({
-      data: this.toCreateInput(user),
+  async existsByUsername(username: string): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findUnique({
+      where: { username },
+      select: { id: true },
     });
+
+    return record !== null;
+  }
+
+  async existsByEmail(email: string): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    return record !== null;
+  }
+
+  async existsByPhone(phone: string): Promise<boolean> {
+    const record = await this.prisma.authenticationUser.findUnique({
+      where: { phone },
+      select: { id: true },
+    });
+
+    return record !== null;
+  }
+
+  async create(user: User): Promise<User> {
+    const record = await this.transactions.run((transaction) =>
+      transaction.authenticationUser.create({
+        data: this.toCreateInput(user),
+      }),
+    );
 
     return this.toDomain(record);
   }
