@@ -60,31 +60,28 @@ describe('UpdateUserService', () => {
     service = new UpdateUserService(repository);
   });
 
-  it(
-    'updates only supplied fields and preserves immutable identity fields',
-    async () => {
-      const user = createUser();
-      findByUuidMock.mockResolvedValue(user);
-      updateMock.mockImplementation(async (updated) => updated);
+  it('updates only supplied fields and preserves immutable identity fields', async () => {
+    const user = createUser();
+    findByUuidMock.mockResolvedValue(user);
+    updateMock.mockImplementation((updated) => Promise.resolve(updated));
 
-      const result = await service.execute(UUID, {
-        email: 'new@example.com',
-        status: 'active',
-      });
+    const result = await service.execute(UUID, {
+      email: 'new@example.com',
+      status: 'active',
+    });
 
-      expect(result.uuid).toBe(UUID);
-      expect(result.username).toBe('fakhri');
-      expect(result.email).toBe('new@example.com');
-      expect(result.phone).toBe('+628123456789');
-      expect(result.status).toBe('active');
-      expect(updateMock).toHaveBeenCalledWith(user);
-    },
-  );
+    expect(result.uuid).toBe(UUID);
+    expect(result.username).toBe('fakhri');
+    expect(result.email).toBe('new@example.com');
+    expect(result.phone).toBe('+628123456789');
+    expect(result.status).toBe('active');
+    expect(updateMock).toHaveBeenCalledWith(user);
+  });
 
   it('normalizes email and string fields before applying the update', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockImplementation(async (updated) => updated);
+    updateMock.mockImplementation((updated) => Promise.resolve(updated));
 
     await service.execute(UUID, {
       username: '  alfi  ',
@@ -100,7 +97,7 @@ describe('UpdateUserService', () => {
   it('allows nullable identity fields to be cleared', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockImplementation(async (updated) => updated);
+    updateMock.mockImplementation((updated) => Promise.resolve(updated));
 
     const result = await service.execute(UUID, {
       username: null,
@@ -163,7 +160,7 @@ describe('UpdateUserService', () => {
   it('updates active and verified state through domain behavior', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockImplementation(async (updated) => updated);
+    updateMock.mockImplementation((updated) => Promise.resolve(updated));
 
     const result = await service.execute(UUID, {
       isActive: false,
