@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npx prisma validate
+
+      - name: Generate Prisma Client
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run prisma:generate
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run typecheck
+
+      - name: Unit tests
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run test
+
+      - name: Build
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run build
