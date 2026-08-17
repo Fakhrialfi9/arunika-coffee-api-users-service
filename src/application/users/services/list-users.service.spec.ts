@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type {
-  UserListFilters,
   UserListResult,
   UserRepository,
 } from '../../../domain/users/repositories/user.repository.js';
@@ -51,7 +50,7 @@ describe('ListUsersService', () => {
 
     const response = await service.execute(new ListUsersDto());
 
-    expect(repository.list).toHaveBeenCalledWith({
+    expect(vi.mocked(repository.list)).toHaveBeenCalledWith({
       page: 1,
       limit: 20,
       search: undefined,
@@ -96,7 +95,7 @@ describe('ListUsersService', () => {
       sortOrder: 'asc',
     });
 
-    expect(repository.list).toHaveBeenCalledWith({
+    expect(vi.mocked(repository.list)).toHaveBeenCalledWith({
       page: 2,
       limit: 10,
       search: 'fakhri',
@@ -125,7 +124,7 @@ describe('ListUsersService', () => {
       isVerified: 'true' as unknown as boolean,
     });
 
-    expect(repository.list).toHaveBeenCalledWith(
+    expect(vi.mocked(repository.list)).toHaveBeenCalledWith(
       expect.objectContaining({
         isActive: false,
         isVerified: true,
@@ -143,7 +142,7 @@ describe('ListUsersService', () => {
       }),
     ).rejects.toBeInstanceOf(ListUsersValidationError);
 
-    expect(repository.list).not.toHaveBeenCalled();
+    expect(vi.mocked(repository.list)).not.toHaveBeenCalled();
   });
 
   it('maps only safe user fields into the application response', async () => {
