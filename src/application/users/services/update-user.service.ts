@@ -7,6 +7,7 @@ import {
   USER_REPOSITORY,
   type UserRepository,
 } from '../../../domain/users/repositories/user.repository.js';
+import type { UserIdentityUpdate } from '../../../domain/users/entities/user.entity.js';
 
 import { UpdateUserDto } from '../dto/update-user.dto.js';
 import { UpdateUserValidationError } from '../errors/update-user-validation.error.js';
@@ -32,10 +33,7 @@ export class UpdateUserService {
     private readonly users: UserRepository,
   ) {}
 
-  async execute(
-    uuid: string,
-    input: UpdateUserDto,
-  ): Promise<UpdateUserResult> {
+  async execute(uuid: string, input: UpdateUserDto): Promise<UpdateUserResult> {
     const dto = plainToInstance(UpdateUserDto, input);
     const errors = await validate(dto, {
       whitelist: true,
@@ -114,11 +112,21 @@ export class UpdateUserService {
       dto.email !== undefined ||
       dto.phone !== undefined
     ) {
-      user.updateIdentity({
-        username: dto.username,
-        email: dto.email,
-        phone: dto.phone,
-      });
+      const changes: UserIdentityUpdate = {};
+
+      if (dto.username !== undefined) {
+        changes.username = dto.username;
+      }
+
+      if (dto.email !== undefined) {
+        changes.email = dto.email;
+      }
+
+      if (dto.phone !== undefined) {
+        changes.phone = dto.phone;
+      }
+
+      user.updateIdentity(changes);
     }
 
     if (dto.status !== undefined && dto.status !== user.status) {
