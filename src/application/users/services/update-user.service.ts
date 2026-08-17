@@ -2,10 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import {
-  User,
-  type UserIdentityUpdate,
-} from '../../../domain/users/entities/user.entity.js';
+import { User } from '../../../domain/users/entities/user.entity.js';
+import type { UserIdentityUpdate } from '../../../domain/users/entities/user.entity.js';
 import {
   USER_REPOSITORY,
   type UserRepository,
@@ -35,10 +33,7 @@ export class UpdateUserService {
     private readonly users: UserRepository,
   ) {}
 
-  async execute(
-    uuid: string,
-    input: UpdateUserDto,
-  ): Promise<UpdateUserResult> {
+  async execute(uuid: string, input: UpdateUserDto): Promise<UpdateUserResult> {
     const dto = plainToInstance(UpdateUserDto, input);
     const errors = await validate(dto, {
       whitelist: true,
