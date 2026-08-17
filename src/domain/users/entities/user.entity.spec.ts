@@ -45,7 +45,9 @@ describe('User', () => {
   });
 
   it('enforces database-aligned field lengths', () => {
-    expect(() => User.create({ username: 'a'.repeat(101) })).toThrow('username');
+    expect(() => User.create({ username: 'a'.repeat(101) })).toThrow(
+      'username',
+    );
     expect(() => User.create({ email: 'a'.repeat(192) })).toThrow('email');
     expect(() => User.create({ phone: 'a'.repeat(31) })).toThrow('phone');
     expect(() => User.create({ status: 'a'.repeat(31) })).toThrow('status');

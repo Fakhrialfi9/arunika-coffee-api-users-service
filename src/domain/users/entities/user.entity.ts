@@ -104,7 +104,9 @@ export class User {
   }
 
   get deletedAt(): Date | null {
-    return this._deletedAt === null ? null : new Date(this._deletedAt.getTime());
+    return this._deletedAt === null
+      ? null
+      : new Date(this._deletedAt.getTime());
   }
 
   activate(): void {
@@ -181,7 +183,11 @@ export class User {
   }
 
   private static validateUuid(uuid: string): void {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        uuid,
+      )
+    ) {
       throw new Error('User uuid must be a valid UUID');
     }
   }
@@ -196,7 +202,11 @@ export class User {
     return normalized;
   }
 
-  private static validateOptionalString(value: string | null, field: string, maxLength: number): void {
+  private static validateOptionalString(
+    value: string | null,
+    field: string,
+    maxLength: number,
+  ): void {
     if (value !== null && value.length > maxLength) {
       throw new Error(`User ${field} must not exceed ${maxLength} characters`);
     }
