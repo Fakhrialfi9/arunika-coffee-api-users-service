@@ -1,25 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service.js';
 
-export interface DatabaseHealthResult {
-  readonly status: 'up' | 'down';
-}
+import { PrismaService } from './prisma.service.js';
 
 @Injectable()
 export class DatabaseHealthService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async check(): Promise<DatabaseHealthResult> {
+  async check(): Promise<boolean> {
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.prisma.$queryRawUnsafe('SELECT 1');
 
-      return {
-        status: 'up',
-      };
+      return true;
     } catch {
-      return {
-        status: 'down',
-      };
+      return false;
     }
   }
 }
