@@ -41,10 +41,7 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record === null ? null : this.toDomain(record);
   }
 
-  async existsByUsername(
-    username: string,
-    excludeUuid?: string,
-  ): Promise<boolean> {
+  async existsByUsername(username: string, excludeUuid?: string): Promise<boolean> {
     const record = await this.prisma.authenticationUser.findFirst({
       where: {
         username,
@@ -56,10 +53,7 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record !== null;
   }
 
-  async existsByEmail(
-    email: string,
-    excludeUuid?: string,
-  ): Promise<boolean> {
+  async existsByEmail(email: string, excludeUuid?: string): Promise<boolean> {
     const record = await this.prisma.authenticationUser.findFirst({
       where: {
         email,
@@ -71,10 +65,7 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record !== null;
   }
 
-  async existsByPhone(
-    phone: string,
-    excludeUuid?: string,
-  ): Promise<boolean> {
+  async existsByPhone(phone: string, excludeUuid?: string): Promise<boolean> {
     const record = await this.prisma.authenticationUser.findFirst({
       where: {
         phone,
