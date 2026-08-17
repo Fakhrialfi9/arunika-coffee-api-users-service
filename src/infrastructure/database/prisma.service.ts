@@ -1,6 +1,7 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { PrismaClient } from '../../../prisma/generated/prisma/client.js';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService
@@ -8,18 +9,12 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    const host = process.env.DATABASE_HOST;
-    const port = Number(process.env.DATABASE_PORT);
-    const user = process.env.DATABASE_USER;
-    const password = process.env.DATABASE_PASSWORD;
-    const database = process.env.DATABASE_NAME;
-
     const adapter = new PrismaMariaDb({
-      host,
-      port,
-      user,
-      password,
-      database,
+      host: PrismaService.getRequiredEnv('DATABASE_HOST'),
+      port: PrismaService.getRequiredPort('DATABASE_PORT'),
+      user: PrismaService.getRequiredEnv('DATABASE_USER'),
+      password: PrismaService.getRequiredEnv('DATABASE_PASSWORD'),
+      database: PrismaService.getRequiredEnv('DATABASE_NAME'),
     });
 
     super({
@@ -35,5 +30,26 @@ export class PrismaService
 
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
+  }
+
+  private static getRequiredEnv(name: string): string {
+    const value = process.env[name];
+
+    if (value === undefined || value.trim().length === 0) {
+      throw new Error(`Missing required environment variable: ${name}`);
+    }
+
+    return value;
+  }
+
+  private static getRequiredPort(name: string): number {
+    const value = PrismaService.getRequiredEnv(name);
+    const port = Number(value);
+
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      throw new Error(`Invalid port in environment variable: ${name}`);
+    }
+
+    return port;
   }
 }

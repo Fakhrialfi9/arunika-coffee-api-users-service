@@ -13,10 +13,10 @@ describe('AppController', () => {
         {
           provide: AppService,
           useValue: {
-            getServiceInfo: () => ({
+            getServiceInformation: async () => ({
               name: 'arunika-coffee-api-users-service',
-              status: 'ok',
-              environment: 'test',
+              status: 'ok' as const,
+              database: 'up' as const,
             }),
           },
         },
@@ -25,10 +25,12 @@ describe('AppController', () => {
 
     const controller = module.get<AppController>(AppController);
 
-    expect(controller.getServiceInfo()).toEqual({
+    await expect(controller.getServiceInformation()).resolves.toEqual({
       name: 'arunika-coffee-api-users-service',
       status: 'ok',
-      environment: 'test',
+      database: 'up',
     });
+
+    await module.close();
   });
 });
