@@ -41,7 +41,10 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
     return record === null ? null : this.toDomain(record);
   }
 
-  async existsByUsername(username: string, excludeUuid?: string): Promise<boolean> {
+  async existsByUsername(
+    username: string,
+    excludeUuid?: string,
+  ): Promise<boolean> {
     const record = await this.prisma.authenticationUser.findFirst({
       where: {
         username,
