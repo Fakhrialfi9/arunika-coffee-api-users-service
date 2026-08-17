@@ -10,7 +10,9 @@ import { ListUsersDto } from '../dto/list-users.dto.js';
 import { ListUsersValidationError } from '../errors/list-users-validation.error.js';
 import { ListUsersService } from './list-users.service.js';
 
-const createUser = (overrides: Partial<Parameters<typeof User.create>[0]> = {}) =>
+const createUser = (
+  overrides: Partial<Parameters<typeof User.create>[0]> = {},
+) =>
   User.create({
     username: 'fakhri',
     email: 'fakhri@example.com',
