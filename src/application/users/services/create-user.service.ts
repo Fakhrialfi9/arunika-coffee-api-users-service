@@ -8,9 +8,9 @@ import {
   type UserRepository,
 } from '../../../domain/users/repositories/user.repository.js';
 
+import { CreateUserDto } from '../dto/create-user.dto.js';
 import { CreateUserValidationError } from '../errors/create-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
-import { CreateUserDto } from '../dto/create-user.dto.js';
 
 export interface CreateUserResult {
   uuid: string;
@@ -109,8 +109,12 @@ export class CreateUserService {
     );
   }
 
-  private resolveConflictField(target: unknown): 'username' | 'email' | 'phone' {
-    const fields = Array.isArray(target) ? target.map(String) : [String(target)];
+  private resolveConflictField(
+    target: unknown,
+  ): 'username' | 'email' | 'phone' {
+    const fields = Array.isArray(target)
+      ? target.map(String)
+      : [String(target)];
 
     if (fields.includes('email')) return 'email';
     if (fields.includes('phone')) return 'phone';
