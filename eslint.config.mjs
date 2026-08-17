@@ -4,6 +4,13 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+const typeCheckedConfigs = tseslint.configs.recommendedTypeChecked.map(
+  (config) => ({
+    ...config,
+    files: ['**/*.ts'],
+  }),
+);
+
 export default tseslint.config(
   {
     ignores: [
@@ -16,7 +23,7 @@ export default tseslint.config(
 
   eslint.configs.recommended,
 
-  ...tseslint.configs.recommendedTypeChecked,
+  ...typeCheckedConfigs,
 
   {
     files: ['**/*.ts'],
