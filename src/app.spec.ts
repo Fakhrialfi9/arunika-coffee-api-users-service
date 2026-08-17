@@ -28,5 +28,6 @@ describe('AppController', () => {
     const controller = module.get<AppController>(AppController);
 
     expect(controller.getServiceInformation()).toEqual(serviceInformation);
+    await module.close();
   });
 });

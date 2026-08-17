@@ -8,8 +8,7 @@ export class DatabaseHealthService {
 
   async check(): Promise<boolean> {
     try {
-      await this.prisma.$queryRawUnsafe('SELECT 1');
-
+      await this.prisma.$queryRaw`SELECT 1`;
       return true;
     } catch {
       return false;
