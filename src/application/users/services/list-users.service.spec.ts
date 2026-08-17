@@ -23,8 +23,10 @@ const createUser = (
 describe('ListUsersService', () => {
   let repository: UserRepository;
   let service: ListUsersService;
+  let listMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
+    listMock = vi.fn();
     repository = {
       findByUuid: vi.fn(),
       existsByUsername: vi.fn(),
@@ -32,7 +34,7 @@ describe('ListUsersService', () => {
       existsByPhone: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
-      list: vi.fn(),
+      list: listMock,
     };
     service = new ListUsersService(repository);
   });
@@ -46,11 +48,11 @@ describe('ListUsersService', () => {
       total: 2,
       totalPages: 1,
     };
-    vi.mocked(repository.list).mockResolvedValue(result);
+    listMock.mockResolvedValue(result);
 
     const response = await service.execute(new ListUsersDto());
 
-    expect(vi.mocked(repository.list)).toHaveBeenCalledWith({
+    expect(listMock).toHaveBeenCalledWith({
       page: 1,
       limit: 20,
       search: undefined,
@@ -73,7 +75,7 @@ describe('ListUsersService', () => {
   });
 
   it('passes filters, search, pagination, and sorting to the repository', async () => {
-    vi.mocked(repository.list).mockResolvedValue({
+    listMock.mockResolvedValue({
       items: [],
       page: 2,
       limit: 10,
@@ -95,7 +97,7 @@ describe('ListUsersService', () => {
       sortOrder: 'asc',
     });
 
-    expect(vi.mocked(repository.list)).toHaveBeenCalledWith({
+    expect(listMock).toHaveBeenCalledWith({
       page: 2,
       limit: 10,
       search: 'fakhri',
@@ -111,7 +113,7 @@ describe('ListUsersService', () => {
   });
 
   it('transforms boolean query values correctly', async () => {
-    vi.mocked(repository.list).mockResolvedValue({
+    listMock.mockResolvedValue({
       items: [],
       page: 1,
       limit: 20,
@@ -124,7 +126,7 @@ describe('ListUsersService', () => {
       isVerified: 'true' as unknown as boolean,
     });
 
-    expect(vi.mocked(repository.list)).toHaveBeenCalledWith(
+    expect(listMock).toHaveBeenCalledWith(
       expect.objectContaining({
         isActive: false,
         isVerified: true,
@@ -142,12 +144,12 @@ describe('ListUsersService', () => {
       }),
     ).rejects.toBeInstanceOf(ListUsersValidationError);
 
-    expect(vi.mocked(repository.list)).not.toHaveBeenCalled();
+    expect(listMock).not.toHaveBeenCalled();
   });
 
   it('maps only safe user fields into the application response', async () => {
     const user = createUser();
-    vi.mocked(repository.list).mockResolvedValue({
+    listMock.mockResolvedValue({
       items: [user],
       page: 1,
       limit: 20,
