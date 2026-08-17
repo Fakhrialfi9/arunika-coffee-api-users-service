@@ -1,38 +1,38 @@
-# Step 01 Architecture Boundary
+# Users Service Architecture
 
-## Repository strategy
+## 1. Purpose
 
-Arunika Coffee uses separate repositories:
+`users-service` adalah microservice yang bertanggung jawab terhadap domain Users pada Arunika Coffee Backend.
 
-- `arunika-coffee-api-main` — future API Gateway / public HTTP boundary
-- `arunika-coffee-api-users-service` — Users Service boundary
+Service ini memiliki ownership penuh terhadap:
 
-These repositories are not a monorepo and do not share an npm workspace.
+- User identity
+- User profile
+- User credentials
+- User security state
+- User sessions
+- Two-factor authentication
+- Roles
+- Permissions
+- User-role assignments
+- Role-permission assignments
+- User audit logs
 
-## Users Service boundary
+Service lain tidak boleh mengakses database `arunika_coffee_users` secara langsung.
 
-The Users Service will eventually own the Users domain and the `arunika_coffee_users` database. Other services must not access that database directly.
+Komunikasi antar-service dilakukan melalui contract yang telah ditentukan, terutama gRPC.
 
-Step 01 only establishes the application foundation. No database connection, ORM, repository, domain implementation, CRUD, authentication, authorization, Gateway, or gRPC server is implemented.
+---
 
-## Future gRPC boundary
+# 2. Architecture Style
 
-The future proto layout is:
-
-```text
-proto/
-└── users/
-    └── users.proto
-```
-
-The CRUD contract is intentionally deferred to Step 12. No `.proto` contract is created during Step 01.
-
-## Future clean architecture
-
-The intended dependency direction is:
+Users Service menggunakan layered architecture dengan dependency direction yang terkontrol.
 
 ```text
-Presentation → Application → Domain ← Infrastructure
-```
-
-Only the foundation required to support this direction is established now. Empty future domain folders are intentionally avoided.
+Presentation
+    ↓
+Application
+    ↓
+Domain
+    ↑
+Infrastructure
