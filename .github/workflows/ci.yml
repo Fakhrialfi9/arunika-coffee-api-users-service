@@ -40,6 +40,22 @@ jobs:
       - name: Format check
         run: npm run format:check
 
+      - name: Debug Prettier output
+        if: failure()
+        run: |
+          mkdir -p prettier-debug
+          npx prettier --write "src/**/*.ts" "test/**/*.ts" --no-error-on-unmatched-pattern
+          cp src/application/users/services/update-user.service.ts prettier-debug/update-user.service.ts
+          cp src/application/users/services/update-user.service.spec.ts prettier-debug/update-user.service.spec.ts
+          cp src/infrastructure/database/repositories/prisma-authentication-user.repository.ts prettier-debug/prisma-authentication-user.repository.ts
+
+      - name: Upload Prettier debug output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prettier-debug
+          path: prettier-debug/
+
       - name: Lint
         run: npm run lint
 
