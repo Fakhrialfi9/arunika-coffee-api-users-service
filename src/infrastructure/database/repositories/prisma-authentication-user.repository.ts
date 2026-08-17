@@ -27,8 +27,11 @@ export class PrismaAuthenticationUserRepository implements UserRepository {
   ) {}
 
   async findByUuid(uuid: string): Promise<User | null> {
-    const record = await this.prisma.authenticationUser.findUnique({
-      where: { uuid },
+    const record = await this.prisma.authenticationUser.findFirst({
+      where: {
+        uuid,
+        deletedAt: null,
+      },
     });
 
     return record === null ? null : this.toDomain(record);

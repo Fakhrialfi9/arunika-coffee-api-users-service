@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../domain/users/repositories/user.repository.js';
 import { PrismaAuthenticationUserRepository } from '../../infrastructure/database/repositories/prisma-authentication-user.repository.js';
 import { CreateUserService } from './services/create-user.service.js';
+import { GetUserService } from './services/get-user.service.js';
 
 @Module({
   providers: [
@@ -11,7 +12,8 @@ import { CreateUserService } from './services/create-user.service.js';
       useExisting: PrismaAuthenticationUserRepository,
     },
     CreateUserService,
+    GetUserService,
   ],
-  exports: [CreateUserService],
+  exports: [CreateUserService, GetUserService],
 })
 export class UsersModule {}
