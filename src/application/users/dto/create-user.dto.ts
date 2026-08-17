@@ -1,10 +1,10 @@
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 const trimString = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
