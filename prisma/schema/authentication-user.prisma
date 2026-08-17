@@ -1,9 +1,12 @@
 model AuthenticationUser {
     /**
      * Identity
+     *
+     * BigInt is the internal relational key.
+     * UUID is the stable external identity used by application contracts.
      */
     id   BigInt @id @default(autoincrement()) @db.UnsignedBigInt
-    uuid String @unique @db.Char(36)
+    uuid String @unique @default(uuid()) @db.Char(36)
 
     /**
      * Account Information
@@ -47,5 +50,7 @@ model AuthenticationUser {
     @@index([status])
     @@index([isActive])
     @@index([deletedAt])
+    @@index([status, deletedAt])
+    @@index([isActive, deletedAt])
     @@map("authentication_users")
 }
