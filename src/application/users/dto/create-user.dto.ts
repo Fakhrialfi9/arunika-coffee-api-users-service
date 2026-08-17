@@ -4,6 +4,9 @@ import { IsEmail, IsOptional, IsString, MaxLength } from 'class-validator';
 const trimString = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
 
+const normalizeEmail = ({ value }: { value: unknown }): unknown =>
+  typeof value === 'string' ? value.trim().toLowerCase() : value;
+
 export class CreateUserDto {
   @IsOptional()
   @IsString()
@@ -14,9 +17,7 @@ export class CreateUserDto {
   @IsOptional()
   @IsEmail()
   @MaxLength(191)
-  @Transform(({ value }) =>
-    typeof value === 'string' ? value.trim().toLowerCase() : value,
-  )
+  @Transform(normalizeEmail)
   email?: string | null;
 
   @IsOptional()
