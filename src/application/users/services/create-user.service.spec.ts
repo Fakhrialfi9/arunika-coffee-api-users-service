@@ -7,7 +7,7 @@ import {
 } from '../errors/create-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
-import {
+import type {
   UserRepository,
 } from '../../../domain/users/repositories/user.repository.js';
 
