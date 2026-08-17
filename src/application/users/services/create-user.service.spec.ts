@@ -2,10 +2,14 @@ import { randomUUID } from 'node:crypto';
 
 import { CreateUserService } from './create-user.service.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';
-import { CreateUserValidationError } from '../errors/create-user-validation.error.js';
+import {
+  CreateUserValidationError,
+} from '../errors/create-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
-import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
+import {
+  UserRepository,
+} from '../../../domain/users/repositories/user.repository.js';
 
 class InMemoryUserRepository implements UserRepository {
   private readonly users: User[] = [];
@@ -62,9 +66,7 @@ describe('CreateUserService', () => {
   it('rejects an empty identity payload', async () => {
     const service = new CreateUserService(new InMemoryUserRepository());
 
-    await expect(
-      service.execute(new CreateUserDto()),
-    ).rejects.toMatchObject({
+    await expect(service.execute(new CreateUserDto())).rejects.toMatchObject({
       name: CreateUserValidationError.name,
       messages: ['At least one of username, email, or phone is required'],
     });
