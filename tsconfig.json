@@ -10,9 +10,6 @@
     "removeComments": true,
     "sourceMap": true,
 
-    "outDir": "./dist",
-    "rootDir": "./src",
-
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -36,6 +33,17 @@
     "emitDecoratorMetadata": true,
 
     "verbatimModuleSyntax": true,
+
+    "incremental": true,
+
+    "noFallthroughCasesInSwitch": true,
+
+    "moduleDetection": "force",
+
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+
+    "useDefineForClassFields": true,
 
     "types": ["node", "vitest/globals"]
   },
