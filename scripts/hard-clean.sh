@@ -1,39 +1,17 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-echo "🧹 Cleaning NestJS project..."
+echo "==> Removing dependencies and generated artifacts..."
 
-echo "➡ Removing build files..."
-rm -rf dist
+rm -rf \
+  node_modules \
+  dist \
+  coverage \
+  .cache \
+  node_modules/.cache \
+  prisma/generated \
+  generated \
+  tsconfig.build.tsbuildinfo
 
-echo "➡ Removing test coverage..."
-rm -rf coverage
-
-echo "➡ Removing logs..."
-rm -rf logs
-rm -rf *.log
-
-echo "➡ Removing Nest cache..."
-rm -rf .nestjs
-
-echo "➡ Removing TypeScript cache..."
-find . -name "*.tsbuildinfo" -delete
-
-echo "➡ Removing node cache..."
-rm -rf node_modules/.cache
-
-echo "➡ Cleaning npm cache..."
-npm cache clean --force
-
-echo "➡ Removing node_modules..."
-rm -rf node_modules
-
-echo "➡ Removing lock file..."
-rm -f package-lock.json
-
-echo "➡ Reinstalling dependencies..."
-npm install
-
-echo ""
-echo "✅ NestJS cleanup completed!"
+echo "==> Hard clean completed."

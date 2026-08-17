@@ -1,13 +1,34 @@
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { describe, expect, it } from 'vitest';
-import { AppModule } from './app.module.js';
+
+import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
-describe('Step 01 foundation', () => {
-  it('uses AppModule as the root NestJS module', () => {
-    expect(AppModule).toBeDefined();
-  });
+describe('AppController', () => {
+  it('should return service information', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [
+        {
+          provide: AppService,
+          useValue: {
+            getServiceInfo: () => ({
+              name: 'arunika-coffee-api-users-service',
+              status: 'ok',
+              environment: 'test',
+            }),
+          },
+        },
+      ],
+    }).compile();
 
-  it('keeps the default application service available', () => {
-    expect(new AppService().getHello()).toBe('Hello World!');
+    const controller = module.get<AppController>(AppController);
+
+    expect(controller.getServiceInfo()).toEqual({
+      name: 'arunika-coffee-api-users-service',
+      status: 'ok',
+      environment: 'test',
+    });
   });
 });

@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-echo "🧹 Cleaning NestJS temporary files..."
+echo "==> Removing build and test artifacts..."
 
-rm -rf dist
-rm -rf coverage
-rm -rf logs
-rm -rf .nestjs
+rm -rf \
+  dist \
+  coverage \
+  .cache \
+  node_modules/.cache \
+  tsconfig.build.tsbuildinfo
 
-find . -name "*.tsbuildinfo" -delete
-
-npm cache verify
-
-echo "✅ Soft cleanup done!"
+echo "==> Soft clean completed."
