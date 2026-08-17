@@ -106,16 +106,18 @@ describe('GetUserService', () => {
   it('rejects an invalid UUID', async () => {
     const service = new GetUserService(new InMemoryUserRepository());
 
-    await expect(service.execute({ uuid: 'invalid-uuid' })).rejects.toBeInstanceOf(
-      GetUserValidationError,
-    );
+    await expect(
+      service.execute({ uuid: 'invalid-uuid' }),
+    ).rejects.toBeInstanceOf(GetUserValidationError);
   });
 
   it('rejects unexpected properties', async () => {
     const service = new GetUserService(new InMemoryUserRepository());
 
     await expect(
-      service.execute({ uuid: randomUUID(), id: 1 } as unknown as { uuid: string }),
+      service.execute({ uuid: randomUUID(), id: 1 } as unknown as {
+        uuid: string;
+      }),
     ).rejects.toBeInstanceOf(GetUserValidationError);
   });
 });
