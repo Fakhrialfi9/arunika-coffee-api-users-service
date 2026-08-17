@@ -12,11 +12,6 @@ export default defineConfig({
 
     include: ['test/**/*.e2e-spec.ts'],
 
-    exclude: [
-      'test/users-resilience.e2e-spec.ts',
-      'test/users-internal-failure.e2e-spec.ts',
-    ],
-
     clearMocks: true,
 
     restoreMocks: true,
