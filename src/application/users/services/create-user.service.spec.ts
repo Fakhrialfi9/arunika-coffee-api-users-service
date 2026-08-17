@@ -62,7 +62,9 @@ describe('CreateUserService', () => {
   it('rejects an empty identity payload', async () => {
     const service = new CreateUserService(new InMemoryUserRepository());
 
-    await expect(service.execute(new CreateUserDto())).rejects.toMatchObject({
+    await expect(
+      service.execute(new CreateUserDto()),
+    ).rejects.toMatchObject({
       name: CreateUserValidationError.name,
       messages: ['At least one of username, email, or phone is required'],
     });
