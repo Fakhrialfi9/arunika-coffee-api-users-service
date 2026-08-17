@@ -1,13 +1,5 @@
 import type { User } from '../entities/user.entity.js';
 
-export type UserUniqueField = 'username' | 'email' | 'phone';
-
-export interface UserUniqueFields {
-  username?: string | null;
-  email?: string | null;
-  phone?: string | null;
-}
-
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 
 export interface UserRepository {
