@@ -2,7 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { User, type UserIdentityUpdate } from '../../../domain/users/entities/user.entity.js';
+import { User } from '../../../domain/users/entities/user.entity.js';
+import type { UserIdentityUpdate } from '../../../domain/users/entities/user.entity.js';
 import {
   USER_REPOSITORY,
   type UserRepository,
