@@ -3,12 +3,7 @@ import type { User } from '../entities/user.entity.js';
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 
 export type UserListSortField =
-  | 'createdAt'
-  | 'updatedAt'
-  | 'username'
-  | 'email'
-  | 'status'
-  | 'uuid';
+  'createdAt' | 'updatedAt' | 'username' | 'email' | 'status' | 'uuid';
 
 export type UserListSortOrder = 'asc' | 'desc';
 
