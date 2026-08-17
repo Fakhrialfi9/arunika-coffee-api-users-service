@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
 
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type {
@@ -23,7 +23,7 @@ const createUser = (
 describe('ListUsersService', () => {
   let repository: UserRepository;
   let service: ListUsersService;
-  let listMock: ReturnType<typeof vi.fn>;
+  let listMock: MockedFunction<UserRepository['list']>;
 
   beforeEach(() => {
     listMock = vi.fn();
@@ -55,13 +55,6 @@ describe('ListUsersService', () => {
     expect(listMock).toHaveBeenCalledWith({
       page: 1,
       limit: 20,
-      search: undefined,
-      username: undefined,
-      email: undefined,
-      phone: undefined,
-      status: undefined,
-      isActive: undefined,
-      isVerified: undefined,
       sortBy: 'createdAt',
       sortOrder: 'desc',
     });

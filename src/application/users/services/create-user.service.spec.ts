@@ -5,7 +5,11 @@ import { CreateUserDto } from '../dto/create-user.dto.js';
 import { CreateUserValidationError } from '../errors/create-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
 import { User } from '../../../domain/users/entities/user.entity.js';
-import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
+import type {
+  UserListFilters,
+  UserListResult,
+  UserRepository,
+} from '../../../domain/users/repositories/user.repository.js';
 
 class InMemoryUserRepository implements UserRepository {
   private readonly users: User[] = [];
@@ -39,6 +43,20 @@ class InMemoryUserRepository implements UserRepository {
     const index = this.users.findIndex((item) => item.uuid === user.uuid);
     this.users[index] = user;
     return Promise.resolve(user);
+  }
+
+  list(filters: UserListFilters): Promise<UserListResult> {
+    const visibleUsers = this.users.filter((user) => user.deletedAt === null);
+    const start = (filters.page - 1) * filters.limit;
+    const items = visibleUsers.slice(start, start + filters.limit);
+
+    return Promise.resolve({
+      items,
+      page: filters.page,
+      limit: filters.limit,
+      total: visibleUsers.length,
+      totalPages: Math.ceil(visibleUsers.length / filters.limit),
+    });
   }
 }
 

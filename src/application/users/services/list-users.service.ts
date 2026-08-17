@@ -41,7 +41,7 @@ export class ListUsersService {
     private readonly users: UserRepository,
   ) {}
 
-  async execute(input: ListUsersDto): Promise<ListUsersResult> {
+  async execute(input: Partial<ListUsersDto>): Promise<ListUsersResult> {
     const dto = plainToInstance(ListUsersDto, input);
     const errors = await validate(dto, {
       whitelist: true,
@@ -59,25 +59,39 @@ export class ListUsersService {
     const filters: UserListFilters = {
       page: dto.page,
       limit: dto.limit,
-      search: this.normalizeOptionalString(dto.search),
-      username: this.normalizeOptionalString(dto.username),
-      email: this.normalizeOptionalString(dto.email),
-      phone: this.normalizeOptionalString(dto.phone),
-      status: this.normalizeOptionalString(dto.status),
-      isActive: dto.isActive,
-      isVerified: dto.isVerified,
       sortBy: dto.sortBy,
       sortOrder: dto.sortOrder,
     };
+
+    this.assignOptionalString(filters, 'search', dto.search);
+    this.assignOptionalString(filters, 'username', dto.username);
+    this.assignOptionalString(filters, 'email', dto.email);
+    this.assignOptionalString(filters, 'phone', dto.phone);
+    this.assignOptionalString(filters, 'status', dto.status);
+
+    if (dto.isActive !== undefined) {
+      filters.isActive = dto.isActive;
+    }
+
+    if (dto.isVerified !== undefined) {
+      filters.isVerified = dto.isVerified;
+    }
 
     const result = await this.users.list(filters);
 
     return this.toResult(result);
   }
 
-  private normalizeOptionalString(value?: string): string | undefined {
+  private assignOptionalString<K extends 'search' | 'username' | 'email' | 'phone' | 'status'>(
+    filters: UserListFilters,
+    key: K,
+    value?: string,
+  ): void {
     const normalized = value?.trim();
-    return normalized === '' ? undefined : normalized;
+
+    if (normalized !== undefined && normalized !== '') {
+      filters[key] = normalized;
+    }
   }
 
   private toResult(result: UserListResult): ListUsersResult {
