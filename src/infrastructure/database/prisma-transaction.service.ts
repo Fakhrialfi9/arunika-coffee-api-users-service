@@ -8,7 +8,9 @@ import { PrismaService } from './prisma.service.js';
 export class PrismaTransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  run<T>(operation: (transaction: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+  run<T>(
+    operation: (transaction: Prisma.TransactionClient) => Promise<T>,
+  ): Promise<T> {
     return this.prisma.$transaction(operation);
   }
 }
