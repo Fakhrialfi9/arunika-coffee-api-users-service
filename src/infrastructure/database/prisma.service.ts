@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma/client.js';
 
 @Injectable()
 export class PrismaService
@@ -17,14 +17,11 @@ export class PrismaService
       database: PrismaService.getRequiredEnv('DATABASE_NAME'),
     });
 
-    super({
-      adapter,
-    });
+    super({ adapter });
   }
 
   async onModuleInit(): Promise<void> {
     await this.$connect();
-
     await this.$queryRaw`SELECT 1`;
   }
 
