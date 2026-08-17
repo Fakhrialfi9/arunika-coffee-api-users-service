@@ -1,6 +1,13 @@
 import 'reflect-metadata';
 
-import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type MockedFunction,
+} from 'vitest';
 
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
@@ -53,23 +60,26 @@ describe('UpdateUserService', () => {
     service = new UpdateUserService(repository);
   });
 
-  it('updates only supplied fields and preserves immutable identity fields', async () => {
-    const user = createUser();
-    findByUuidMock.mockResolvedValue(user);
-    updateMock.mockImplementation(async (updated) => updated);
+  it(
+    'updates only supplied fields and preserves immutable identity fields',
+    async () => {
+      const user = createUser();
+      findByUuidMock.mockResolvedValue(user);
+      updateMock.mockImplementation(async (updated) => updated);
 
-    const result = await service.execute(UUID, {
-      email: 'new@example.com',
-      status: 'active',
-    });
+      const result = await service.execute(UUID, {
+        email: 'new@example.com',
+        status: 'active',
+      });
 
-    expect(result.uuid).toBe(UUID);
-    expect(result.username).toBe('fakhri');
-    expect(result.email).toBe('new@example.com');
-    expect(result.phone).toBe('+628123456789');
-    expect(result.status).toBe('active');
-    expect(updateMock).toHaveBeenCalledWith(user);
-  });
+      expect(result.uuid).toBe(UUID);
+      expect(result.username).toBe('fakhri');
+      expect(result.email).toBe('new@example.com');
+      expect(result.phone).toBe('+628123456789');
+      expect(result.status).toBe('active');
+      expect(updateMock).toHaveBeenCalledWith(user);
+    },
+  );
 
   it('normalizes email and string fields before applying the update', async () => {
     const user = createUser();
@@ -103,25 +113,25 @@ describe('UpdateUserService', () => {
   });
 
   it('rejects an empty partial update', async () => {
-    await expect(service.execute(UUID, new UpdateUserDto())).rejects.toBeInstanceOf(
-      UpdateUserValidationError,
-    );
+    await expect(
+      service.execute(UUID, new UpdateUserDto()),
+    ).rejects.toBeInstanceOf(UpdateUserValidationError);
     expect(findByUuidMock).not.toHaveBeenCalled();
   });
 
   it('rejects invalid UUID before accessing the repository', async () => {
-    await expect(service.execute('invalid-uuid', { email: 'new@example.com' })).rejects.toBeInstanceOf(
-      UpdateUserValidationError,
-    );
+    await expect(
+      service.execute('invalid-uuid', { email: 'new@example.com' }),
+    ).rejects.toBeInstanceOf(UpdateUserValidationError);
     expect(findByUuidMock).not.toHaveBeenCalled();
   });
 
   it('rejects updates for a missing user', async () => {
     findByUuidMock.mockResolvedValue(null);
 
-    await expect(service.execute(UUID, { email: 'new@example.com' })).rejects.toBeInstanceOf(
-      UserNotFoundError,
-    );
+    await expect(
+      service.execute(UUID, { email: 'new@example.com' }),
+    ).rejects.toBeInstanceOf(UserNotFoundError);
     expect(updateMock).not.toHaveBeenCalled();
   });
 
@@ -130,9 +140,9 @@ describe('UpdateUserService', () => {
     findByUuidMock.mockResolvedValue(user);
     existsByUsernameMock.mockResolvedValue(true);
 
-    await expect(service.execute(UUID, { username: 'other-user' })).rejects.toBeInstanceOf(
-      UserAlreadyExistsError,
-    );
+    await expect(
+      service.execute(UUID, { username: 'other-user' }),
+    ).rejects.toBeInstanceOf(UserAlreadyExistsError);
     expect(existsByUsernameMock).toHaveBeenCalledWith('other-user', UUID);
     expect(updateMock).not.toHaveBeenCalled();
   });
@@ -140,11 +150,14 @@ describe('UpdateUserService', () => {
   it('maps a database unique constraint into a safe application error', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockRejectedValue({ code: 'P2002', meta: { target: ['email'] } });
+    updateMock.mockRejectedValue({
+      code: 'P2002',
+      meta: { target: ['email'] },
+    });
 
-    await expect(service.execute(UUID, { email: 'race@example.com' })).rejects.toBeInstanceOf(
-      UserAlreadyExistsError,
-    );
+    await expect(
+      service.execute(UUID, { email: 'race@example.com' }),
+    ).rejects.toBeInstanceOf(UserAlreadyExistsError);
   });
 
   it('updates active and verified state through domain behavior', async () => {

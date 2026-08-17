@@ -60,7 +60,9 @@ describe('User entity', () => {
     expect(user.username).toBe('alfi');
     expect(user.email).toBe('alfi@example.com');
     expect(user.phone).toBeNull();
-    expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(createdAt.getTime());
+    expect(user.updatedAt.getTime()).toBeGreaterThanOrEqual(
+      createdAt.getTime(),
+    );
   });
 
   it('does not allow mutable fields to be changed after soft deletion', () => {
