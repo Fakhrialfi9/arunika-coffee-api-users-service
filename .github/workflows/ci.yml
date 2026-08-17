@@ -37,11 +37,6 @@ jobs:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
         run: npm run prisma:generate
 
-      - name: Prettier probe
-        run: |
-          npx prettier --write "src/application/users/dto/create-user.dto.ts" "src/application/users/services/create-user.service.spec.ts"
-          git diff -- src/application/users/dto/create-user.dto.ts src/application/users/services/create-user.service.spec.ts
-
       - name: Format check
         run: npm run format:check
 
