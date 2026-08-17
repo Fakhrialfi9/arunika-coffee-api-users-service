@@ -12,6 +12,8 @@
   "scripts": {
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:status": "prisma migrate status",
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
 
@@ -30,17 +32,17 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
 
-    "typecheck": "tsc --noEmit",
+    "typecheck": "prisma generate && tsc --noEmit",
 
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" --no-error-on-unmatched-pattern",
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" --no-error-on-unmatched-pattern",
 
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:unit": "vitest run --config vitest.config.ts",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "test:coverage": "vitest run --coverage",
-    "test:coverage:e2e": "vitest run --config vitest.e2e.config.ts --coverage",
+    "test": "prisma generate && vitest run",
+    "test:watch": "prisma generate && vitest",
+    "test:unit": "prisma generate && vitest run --config vitest.config.ts",
+    "test:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts",
+    "test:coverage": "prisma generate && vitest run --coverage",
+    "test:coverage:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts --coverage",
     "test:all": "npm run test:unit && npm run test:e2e",
 
     "check:health": "npm run lint && npm run typecheck && npm run test && npm run format:check && npm run build",
