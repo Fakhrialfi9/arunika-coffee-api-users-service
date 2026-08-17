@@ -82,11 +82,9 @@ export class ListUsersService {
     return this.toResult(result);
   }
 
-  private assignOptionalString<K extends 'search' | 'username' | 'email' | 'phone' | 'status'>(
-    filters: UserListFilters,
-    key: K,
-    value?: string,
-  ): void {
+  private assignOptionalString<
+    K extends 'search' | 'username' | 'email' | 'phone' | 'status',
+  >(filters: UserListFilters, key: K, value?: string): void {
     const normalized = value?.trim();
 
     if (normalized !== undefined && normalized !== '') {

@@ -1,4 +1,11 @@
-import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type MockedFunction,
+} from 'vitest';
 
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type {
