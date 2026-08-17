@@ -1,10 +1,12 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+import appConfig from './config/app.config.js';
+import validateEnvironment from './config/env.validation.js';
+import { DatabaseModule } from './infrastructure/database/database.module.js';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { appConfig } from './config/app.config.js';
-import { validateEnvironment } from './config/env.validation.js';
 
 @Module({
   imports: [
@@ -12,9 +14,9 @@ import { validateEnvironment } from './config/env.validation.js';
       isGlobal: true,
       cache: true,
       load: [appConfig],
-      envFilePath: ['.env'],
       validate: validateEnvironment,
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

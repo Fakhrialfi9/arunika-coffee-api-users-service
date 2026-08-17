@@ -1,24 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-
-import type { AppConfig } from './config/app.config.js';
+import { DatabaseHealthService } from './infrastructure/database/database-health.service.js';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly databaseHealthService: DatabaseHealthService) {}
 
-  getServiceInfo(): {
-    name: string;
-    status: string;
-    environment: string;
-  } {
+  async getServiceInformation(): Promise<{
+    readonly name: string;
+    readonly status: 'ok';
+    readonly database: 'up' | 'down';
+  }> {
+    const database = await this.databaseHealthService.check();
+
     return {
-      name: this.configService.getOrThrow<AppConfig['name']>('app.name'),
+      name: process.env.APP_NAME ?? 'arunika-coffee-api-users-service',
       status: 'ok',
-      environment:
-        this.configService.getOrThrow<AppConfig['environment']>(
-          'app.environment',
-        ),
+      database: database.status,
     };
   }
 }
