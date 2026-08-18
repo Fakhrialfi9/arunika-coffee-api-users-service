@@ -11,6 +11,7 @@ import {
 
 import { User } from '../../../domain/users/entities/user.entity.js';
 import type { UserRepository } from '../../../domain/users/repositories/user.repository.js';
+import { RepositoryUniqueConstraintError } from '../../../infrastructure/database/errors/repository.error.js';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
 import { UpdateUserValidationError } from '../errors/update-user-validation.error.js';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error.js';
@@ -168,13 +169,12 @@ describe('UpdateUserService', () => {
     expect(updateMock).not.toHaveBeenCalled();
   });
 
-  it('maps a database unique constraint into a safe application error', async () => {
+  it('maps a repository unique constraint into a safe application error', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockRejectedValue({
-      code: 'P2002',
-      meta: { target: ['email'] },
-    });
+    updateMock.mockRejectedValue(
+      new RepositoryUniqueConstraintError('email'),
+    );
 
     await expect(
       service.execute(UUID, { email: 'race@example.com' }),
