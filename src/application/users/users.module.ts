@@ -12,7 +12,6 @@ import { UpdateUserService } from './services/update-user.service.js';
 @Module({
   controllers: [UsersGrpcController],
   providers: [
-    PrismaAuthenticationUserRepository,
     {
       provide: USER_REPOSITORY,
       useExisting: PrismaAuthenticationUserRepository,
