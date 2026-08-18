@@ -1,4 +1,4 @@
-# gRPC Contract — Users Service
+# gRPC Contract & Server — Users Service
 
 ## Source of truth
 
@@ -56,6 +56,20 @@ Proto3 `optional` is used where field presence matters. This is important for `U
 
 Unspecified pagination/sorting values are normalized by the application layer to the existing defaults (`page=1`, `limit=20`, `createdAt`, descending).
 
+## gRPC server
+
+NestJS starts the Users gRPC transport alongside the existing application bootstrap. The server implements the `UsersService` contract and binds all five CRUD RPCs to the existing application services:
+
+- `CreateUser` → `CreateUserService`
+- `GetUser` → `GetUserService`
+- `ListUsers` → `ListUsersService`
+- `UpdateUser` → `UpdateUserService`
+- `DeleteUser` → `DeleteUserService`
+
+The bind address is controlled by `GRPC_USERS_HOST` and `GRPC_USERS_PORT`. The canonical local configuration uses `localhost:50051`.
+
+The gRPC controller maps application results to the protobuf response shape without exposing Prisma models or sensitive database concerns.
+
 ## Status and error convention
 
 Successful RPCs use the normal gRPC `OK` status and return the declared response message. Errors use standard gRPC status codes; errors are not embedded as ad-hoc response payloads.
@@ -70,7 +84,7 @@ Successful RPCs use the normal gRPC `OK` status and return the declared response
 | Service unavailable | `UNAVAILABLE` |
 | RPC not implemented | `UNIMPLEMENTED` |
 
-The gRPC server implementation in Step 16/17 is responsible for mapping the existing application/domain errors to these statuses. This step only establishes the stable contract and convention.
+Detailed application-error to gRPC-status mapping is handled in Step 17.
 
 ## Compatibility rules
 
@@ -85,4 +99,4 @@ The gRPC server implementation in Step 16/17 is responsible for mapping the exis
 
 `users-service` owns the Users Service protobuf contract. Consumers must depend on the versioned protobuf contract, not on the Users Service database schema or Prisma models.
 
-The gRPC transport/server implementation is intentionally deferred to Step 16. Validation and application-error mapping are deferred to Step 17.
+Payload validation and application-error mapping are intentionally deferred to Step 17. Full real-client gRPC integration testing is deferred to Step 18.
