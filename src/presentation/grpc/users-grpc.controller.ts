@@ -68,9 +68,9 @@ export class UsersGrpcController {
     phone?: string;
   }): Promise<{ user: GrpcUser }> {
     const user = await this.createUser.execute({
-      username: request.username,
-      email: request.email,
-      phone: request.phone,
+      ...(request.username !== undefined && { username: request.username }),
+      ...(request.email !== undefined && { email: request.email }),
+      ...(request.phone !== undefined && { phone: request.phone }),
     });
 
     return { user: this.toGrpcUser(user) };
@@ -96,15 +96,21 @@ export class UsersGrpcController {
     };
   }> {
     const result = await this.listUsers.execute({
-      page: this.toOptionalPositiveInteger(request.page),
-      limit: this.toOptionalPositiveInteger(request.limit),
-      search: request.search,
-      username: request.username,
-      email: request.email,
-      phone: request.phone,
-      status: request.status,
-      isActive: request.is_active,
-      isVerified: request.is_verified,
+      ...(this.toOptionalPositiveInteger(request.page) !== undefined && {
+        page: this.toOptionalPositiveInteger(request.page),
+      }),
+      ...(this.toOptionalPositiveInteger(request.limit) !== undefined && {
+        limit: this.toOptionalPositiveInteger(request.limit),
+      }),
+      ...(request.search !== undefined && { search: request.search }),
+      ...(request.username !== undefined && { username: request.username }),
+      ...(request.email !== undefined && { email: request.email }),
+      ...(request.phone !== undefined && { phone: request.phone }),
+      ...(request.status !== undefined && { status: request.status }),
+      ...(request.is_active !== undefined && { isActive: request.is_active }),
+      ...(request.is_verified !== undefined && {
+        isVerified: request.is_verified,
+      }),
       sortBy: this.toSortField(request.sort_by),
       sortOrder: this.toSortOrder(request.sort_order),
     });
@@ -131,12 +137,14 @@ export class UsersGrpcController {
     is_verified?: boolean;
   }): Promise<{ user: GrpcUser }> {
     const user = await this.updateUser.execute(request.uuid, {
-      username: request.username,
-      email: request.email,
-      phone: request.phone,
-      status: request.status,
-      isActive: request.is_active,
-      isVerified: request.is_verified,
+      ...(request.username !== undefined && { username: request.username }),
+      ...(request.email !== undefined && { email: request.email }),
+      ...(request.phone !== undefined && { phone: request.phone }),
+      ...(request.status !== undefined && { status: request.status }),
+      ...(request.is_active !== undefined && { isActive: request.is_active }),
+      ...(request.is_verified !== undefined && {
+        isVerified: request.is_verified,
+      }),
     });
 
     return { user: this.toGrpcUser(user) };
