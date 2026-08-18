@@ -1,4 +1,4 @@
-import { plainToInstance } from 'class-transformer';
+import { plainToInstance, Type } from 'class-transformer';
 import {
   IsBooleanString,
   IsEnum,
@@ -29,6 +29,7 @@ class EnvironmentVariables {
   @IsNotEmpty()
   APP_HOST!: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(65535)
@@ -38,6 +39,7 @@ class EnvironmentVariables {
   @IsNotEmpty()
   DATABASE_HOST!: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(65535)
@@ -65,11 +67,13 @@ class EnvironmentVariables {
   @IsNotEmpty()
   GRPC_USERS_HOST!: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(65535)
   GRPC_USERS_PORT = 50051;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   USERS_GRPC_TIMEOUT_MS = 3000;
@@ -78,10 +82,12 @@ class EnvironmentVariables {
   @IsNotEmpty()
   SECURITY_CORS_ORIGINS!: string;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   SECURITY_RATE_LIMIT_TTL = 60000;
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   SECURITY_RATE_LIMIT_MAX = 100;
@@ -115,6 +121,7 @@ class EnvironmentVariables {
   @IsBooleanString()
   OTEL_METRICS_ENABLED = 'true';
 
+  @Type(() => Number)
   @IsInt()
   @Min(1)
   OTEL_METRIC_EXPORT_INTERVAL = 60000;
