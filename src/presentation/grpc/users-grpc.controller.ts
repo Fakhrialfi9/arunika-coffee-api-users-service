@@ -84,9 +84,7 @@ export class UsersGrpcController {
   }
 
   @GrpcMethod('UsersService', 'ListUsers')
-  async listUsersHandler(
-    request: GrpcListUsersRequest,
-  ): Promise<{
+  async listUsersHandler(request: GrpcListUsersRequest): Promise<{
     items: GrpcUser[];
     pagination: {
       page: number;
@@ -161,7 +159,9 @@ export class UsersGrpcController {
     };
   }
 
-  private toOptionalPositiveInteger(value: number | undefined): number | undefined {
+  private toOptionalPositiveInteger(
+    value: number | undefined,
+  ): number | undefined {
     return value !== undefined && value > 0 ? value : undefined;
   }
 

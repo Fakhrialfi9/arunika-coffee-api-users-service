@@ -16,21 +16,16 @@ async function bootstrap(): Promise<void> {
 
   const host = config.getOrThrow<AppConfig['host']>('app.host');
   const port = config.getOrThrow<AppConfig['port']>('app.port');
-  const grpcUsersHost = config.getOrThrow<AppConfig['grpcUsersHost']>(
-    'app.grpcUsersHost',
-  );
-  const grpcUsersPort = config.getOrThrow<AppConfig['grpcUsersPort']>(
-    'app.grpcUsersPort',
-  );
+  const grpcUsersHost =
+    config.getOrThrow<AppConfig['grpcUsersHost']>('app.grpcUsersHost');
+  const grpcUsersPort =
+    config.getOrThrow<AppConfig['grpcUsersPort']>('app.grpcUsersPort');
 
   app.connectMicroservice({
     transport: Transport.GRPC,
     options: {
       package: 'arunika.coffee.users.v1',
-      protoPath: join(
-        process.cwd(),
-        'proto/users/v1/users.proto',
-      ),
+      protoPath: join(process.cwd(), 'proto/users/v1/users.proto'),
       url: `${grpcUsersHost}:${grpcUsersPort}`,
       loader: {
         keepCase: true,
