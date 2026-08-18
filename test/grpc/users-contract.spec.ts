@@ -27,11 +27,8 @@ describe('Users gRPC contract', () => {
     const service = packageDefinition['arunika.coffee.users.v1.UsersService'];
 
     expect(service).toBeDefined();
-    expect(service?.service).toBeDefined();
 
-    const serviceDefinition = service?.service as
-      Record<string, unknown> | undefined;
-    const methods = Object.keys(serviceDefinition ?? {});
+    const methods = Object.keys(service ?? {});
 
     expect(methods).toHaveLength(5);
     expect(methods).toEqual(
