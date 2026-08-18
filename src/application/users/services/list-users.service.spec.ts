@@ -136,6 +136,13 @@ describe('ListUsersService', () => {
     );
   });
 
+  it('rejects invalid boolean query values', async () => {
+    await expect(
+      service.execute({ isActive: 'invalid' as unknown as boolean }),
+    ).rejects.toBeInstanceOf(ListUsersValidationError);
+    expect(listMock).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid pagination and sorting input', async () => {
     await expect(
       service.execute({
@@ -146,6 +153,13 @@ describe('ListUsersService', () => {
       }),
     ).rejects.toBeInstanceOf(ListUsersValidationError);
 
+    expect(listMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects unknown properties', async () => {
+    await expect(
+      service.execute({ unexpected: true } as never),
+    ).rejects.toBeInstanceOf(ListUsersValidationError);
     expect(listMock).not.toHaveBeenCalled();
   });
 

@@ -69,11 +69,29 @@ describe('DeleteUserService', () => {
     expect(updateMock).not.toHaveBeenCalled();
   });
 
+  it('rejects unexpected properties', async () => {
+    await expect(
+      service.execute({ uuid: UUID, unexpected: true } as never),
+    ).rejects.toBeInstanceOf(DeleteUserValidationError);
+    expect(findByUuidMock).not.toHaveBeenCalled();
+  });
+
   it('rejects deletion when the user does not exist', async () => {
     findByUuidMock.mockResolvedValue(null);
 
     await expect(service.execute({ uuid: UUID })).rejects.toBeInstanceOf(
       UserNotFoundError,
+    );
+    expect(updateMock).not.toHaveBeenCalled();
+  });
+
+  it('treats an already soft-deleted user as not found', async () => {
+    const user = createUser();
+    user.softDelete();
+    findByUuidMock.mockResolvedValue(user);
+
+    await expect(service.execute({ uuid: UUID })).rejects.toEqual(
+      new UserNotFoundError(UUID),
     );
     expect(updateMock).not.toHaveBeenCalled();
   });

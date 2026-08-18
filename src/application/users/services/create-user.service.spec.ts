@@ -90,11 +90,27 @@ describe('CreateUserService', () => {
     });
   });
 
+  it('rejects whitespace-only identity values', async () => {
+    const service = new CreateUserService(new InMemoryUserRepository());
+
+    await expect(
+      service.execute({ username: '   ' }),
+    ).rejects.toBeInstanceOf(CreateUserValidationError);
+  });
+
   it('rejects malformed email input', async () => {
     const service = new CreateUserService(new InMemoryUserRepository());
 
     await expect(
       service.execute({ email: 'not-an-email' }),
+    ).rejects.toBeInstanceOf(CreateUserValidationError);
+  });
+
+  it('rejects unknown properties', async () => {
+    const service = new CreateUserService(new InMemoryUserRepository());
+
+    await expect(
+      service.execute({ username: 'fakhri', unexpected: true } as never),
     ).rejects.toBeInstanceOf(CreateUserValidationError);
   });
 

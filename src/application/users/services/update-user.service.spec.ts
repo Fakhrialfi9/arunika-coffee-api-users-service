@@ -116,6 +116,30 @@ describe('UpdateUserService', () => {
     expect(findByUuidMock).not.toHaveBeenCalled();
   });
 
+  it('rejects whitespace-only string values', async () => {
+    await expect(
+      service.execute(UUID, { status: '   ' }),
+    ).rejects.toBeInstanceOf(UpdateUserValidationError);
+    expect(findByUuidMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed email input', async () => {
+    await expect(
+      service.execute(UUID, { email: 'not-an-email' }),
+    ).rejects.toBeInstanceOf(UpdateUserValidationError);
+    expect(findByUuidMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects unknown properties', async () => {
+    await expect(
+      service.execute(UUID, {
+        email: 'new@example.com',
+        unexpected: true,
+      } as never),
+    ).rejects.toBeInstanceOf(UpdateUserValidationError);
+    expect(findByUuidMock).not.toHaveBeenCalled();
+  });
+
   it('rejects invalid UUID before accessing the repository', async () => {
     await expect(
       service.execute('invalid-uuid', { email: 'new@example.com' }),
