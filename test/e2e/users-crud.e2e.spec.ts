@@ -3,9 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { User } from '../../src/domain/users/entities/user.entity.js';
-import {
-  RepositoryUniqueConstraintError,
-} from '../../src/infrastructure/database/errors/repository.error.js';
+import { RepositoryUniqueConstraintError } from '../../src/infrastructure/database/errors/repository.error.js';
 import { PrismaAuthenticationUserRepository } from '../../src/infrastructure/database/repositories/prisma-authentication-user.repository.js';
 import { PrismaTransactionService } from '../../src/infrastructure/database/prisma-transaction.service.js';
 import { PrismaService } from '../../src/infrastructure/database/prisma.service.js';

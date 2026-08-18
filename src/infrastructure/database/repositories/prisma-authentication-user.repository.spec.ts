@@ -47,8 +47,7 @@ function createRepository(options?: {
 }): PrismaAuthenticationUserRepository {
   const prisma = {
     authenticationUser: {
-      findFirst:
-        options?.findFirst ?? (() => Promise.resolve(record)),
+      findFirst: options?.findFirst ?? (() => Promise.resolve(record)),
     },
   } as unknown as PrismaService;
 
@@ -97,7 +96,10 @@ describe('PrismaAuthenticationUserRepository', () => {
       meta: { target: ['email'] },
     };
     const repository = createRepository({ transactionError: prismaError });
-    const user = User.create({ uuid: randomUUID(), email: 'duplicate@example.com' });
+    const user = User.create({
+      uuid: randomUUID(),
+      email: 'duplicate@example.com',
+    });
 
     await expect(repository.create(user)).rejects.toMatchObject({
       code: 'REPOSITORY_UNIQUE_CONSTRAINT',
