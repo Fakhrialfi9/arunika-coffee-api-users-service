@@ -95,13 +95,12 @@ export class UsersGrpcController {
       total_pages: number;
     };
   }> {
+    const page = this.toOptionalPositiveInteger(request.page);
+    const limit = this.toOptionalPositiveInteger(request.limit);
+
     const result = await this.listUsers.execute({
-      ...(this.toOptionalPositiveInteger(request.page) !== undefined && {
-        page: this.toOptionalPositiveInteger(request.page),
-      }),
-      ...(this.toOptionalPositiveInteger(request.limit) !== undefined && {
-        limit: this.toOptionalPositiveInteger(request.limit),
-      }),
+      ...(page !== undefined && { page }),
+      ...(limit !== undefined && { limit }),
       ...(request.search !== undefined && { search: request.search }),
       ...(request.username !== undefined && { username: request.username }),
       ...(request.email !== undefined && { email: request.email }),
