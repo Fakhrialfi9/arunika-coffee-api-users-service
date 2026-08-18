@@ -172,9 +172,7 @@ describe('UpdateUserService', () => {
   it('maps a repository unique constraint into a safe application error', async () => {
     const user = createUser();
     findByUuidMock.mockResolvedValue(user);
-    updateMock.mockRejectedValue(
-      new RepositoryUniqueConstraintError('email'),
-    );
+    updateMock.mockRejectedValue(new RepositoryUniqueConstraintError('email'));
 
     await expect(
       service.execute(UUID, { email: 'race@example.com' }),
