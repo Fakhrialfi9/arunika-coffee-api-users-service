@@ -14,6 +14,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: arunika_coffee_users
+          MYSQL_USER: ci
+          MYSQL_PASSWORD: ci
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +53,11 @@ jobs:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
         run: npm run prisma:generate
 
+      - name: Deploy database schema
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run prisma:deploy
+
       - name: Format check
         run: npm run format:check
 
@@ -52,6 +73,11 @@ jobs:
         env:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
         run: npm run test
+
+      - name: CRUD integration tests
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run test:e2e
 
       - name: Build
         env:
