@@ -4,13 +4,16 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.spec.ts', 'test/unit/**/*.spec.ts'],
+    include: [
+      'src/**/*.spec.ts',
+      'test/unit/**/*.spec.ts',
+      'test/grpc/**/*.spec.ts',
+    ],
     exclude: [
       'node_modules/**',
       'dist/**',
       'test/e2e/**',
       'test/integration/**',
-      'test/grpc/**',
     ],
     coverage: {
       provider: 'v8',
