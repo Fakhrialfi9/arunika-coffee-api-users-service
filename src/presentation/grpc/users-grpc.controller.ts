@@ -96,8 +96,8 @@ export class UsersGrpcController {
     };
   }> {
     const result = await this.listUsers.execute({
-      page: request.page,
-      limit: request.limit,
+      page: this.toOptionalPositiveInteger(request.page),
+      limit: this.toOptionalPositiveInteger(request.limit),
       search: request.search,
       username: request.username,
       email: request.email,
@@ -152,6 +152,10 @@ export class UsersGrpcController {
       uuid: request.uuid,
       deleted: true,
     };
+  }
+
+  private toOptionalPositiveInteger(value: number | undefined): number | undefined {
+    return value !== undefined && value > 0 ? value : undefined;
   }
 
   private toSortField(value: string | number | undefined): UserListSortField {
