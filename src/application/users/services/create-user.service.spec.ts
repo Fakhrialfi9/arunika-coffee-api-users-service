@@ -93,9 +93,9 @@ describe('CreateUserService', () => {
   it('rejects whitespace-only identity values', async () => {
     const service = new CreateUserService(new InMemoryUserRepository());
 
-    await expect(
-      service.execute({ username: '   ' }),
-    ).rejects.toBeInstanceOf(CreateUserValidationError);
+    await expect(service.execute({ username: '   ' })).rejects.toBeInstanceOf(
+      CreateUserValidationError,
+    );
   });
 
   it('rejects malformed email input', async () => {
