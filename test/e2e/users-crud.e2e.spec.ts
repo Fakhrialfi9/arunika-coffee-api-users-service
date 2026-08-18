@@ -4,13 +4,13 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { User } from '../../src/domain/users/entities/user.entity.js';
 import { RepositoryUniqueConstraintError } from '../../src/infrastructure/database/errors/repository.error.js';
-import { PrismaAuthenticationUserRepository } from '../../src/infrastructure/database/repositories/prisma-authentication-user.repository.js';
 import { PrismaTransactionService } from '../../src/infrastructure/database/prisma-transaction.service.js';
 import { PrismaService } from '../../src/infrastructure/database/prisma.service.js';
+import { PrismaAuthenticationUserRepository } from '../../src/infrastructure/database/repositories/prisma-authentication-user.repository.js';
 
 describe('Users CRUD repository integration', () => {
-  let prisma: PrismaService;
-  let repository: PrismaAuthenticationUserRepository;
+  let prisma: PrismaService | undefined;
+  let repository: PrismaAuthenticationUserRepository | undefined;
   const uuids: string[] = [];
 
   beforeAll(async () => {
@@ -23,6 +23,8 @@ describe('Users CRUD repository integration', () => {
   });
 
   afterAll(async () => {
+    if (prisma === undefined) return;
+
     if (uuids.length > 0) {
       await prisma.authenticationUser.deleteMany({
         where: { uuid: { in: uuids } },
@@ -41,8 +43,8 @@ describe('Users CRUD repository integration', () => {
       phone: '+628123456789',
     });
 
-    const created = await repository.create(user);
-    const found = await repository.findByUuid(uuid);
+    const created = await repository!.create(user);
+    const found = await repository!.findByUuid(uuid);
 
     expect(created.uuid).toBe(uuid);
     expect(found?.uuid).toBe(uuid);
@@ -56,7 +58,7 @@ describe('Users CRUD repository integration', () => {
     uuids.push(firstUuid, secondUuid);
     const email = `duplicate-${firstUuid}@example.com`;
 
-    await repository.create(
+    await repository!.create(
       User.create({
         uuid: firstUuid,
         username: `duplicate-${firstUuid.slice(0, 8)}`,
@@ -65,7 +67,7 @@ describe('Users CRUD repository integration', () => {
     );
 
     await expect(
-      repository.create(
+      repository!.create(
         User.create({
           uuid: secondUuid,
           username: `duplicate-${secondUuid.slice(0, 8)}`,
@@ -84,7 +86,7 @@ describe('Users CRUD repository integration', () => {
       email: `before-${uuid}@example.com`,
     });
 
-    await repository.create(user);
+    await repository!.create(user);
     user.updateIdentity({
       username: `after-${uuid.slice(0, 8)}`,
       email: `after-${uuid}@example.com`,
@@ -92,8 +94,8 @@ describe('Users CRUD repository integration', () => {
     user.verify();
     user.changeStatus('active');
 
-    const updated = await repository.update(user);
-    const found = await repository.findByUuid(uuid);
+    const updated = await repository!.update(user);
+    const found = await repository!.findByUuid(uuid);
 
     expect(updated.username).toBe(`after-${uuid.slice(0, 8)}`);
     expect(updated.isVerified).toBe(true);
@@ -108,7 +110,7 @@ describe('Users CRUD repository integration', () => {
     uuids.push(uuid);
     const username = `list-${uuid.slice(0, 8)}`;
 
-    await repository.create(
+    await repository!.create(
       User.create({
         uuid,
         username,
@@ -117,7 +119,7 @@ describe('Users CRUD repository integration', () => {
       }),
     );
 
-    const result = await repository.list({
+    const result = await repository!.list({
       page: 1,
       limit: 10,
       search: username,
@@ -141,12 +143,12 @@ describe('Users CRUD repository integration', () => {
       email: `delete-${uuid}@example.com`,
     });
 
-    await repository.create(user);
+    await repository!.create(user);
     user.softDelete();
-    await repository.update(user);
+    await repository!.update(user);
 
-    expect(await repository.findByUuid(uuid)).toBeNull();
-    const result = await repository.list({
+    expect(await repository!.findByUuid(uuid)).toBeNull();
+    const result = await repository!.list({
       page: 1,
       limit: 10,
       search: user.username ?? undefined,

@@ -8,9 +8,9 @@ import {
   RepositoryPersistenceError,
   RepositoryUniqueConstraintError,
 } from '../errors/repository.error.js';
-import { PrismaAuthenticationUserRepository } from './prisma-authentication-user.repository.js';
 import type { PrismaService } from '../prisma.service.js';
 import type { PrismaTransactionService } from '../prisma-transaction.service.js';
+import { PrismaAuthenticationUserRepository } from './prisma-authentication-user.repository.js';
 
 type AuthenticationUserRecord = {
   uuid: string;
@@ -40,10 +40,23 @@ const record: AuthenticationUserRecord = {
   deletedAt: null,
 };
 
+function createPrismaError(
+  code: string,
+  meta?: unknown,
+): Error & { code: string; meta?: unknown } {
+  const error = new Error(`Prisma error ${code}`) as Error & {
+    code: string;
+    meta?: unknown;
+  };
+  error.code = code;
+  if (meta !== undefined) error.meta = meta;
+  return error;
+}
+
 function createRepository(options?: {
   findFirst?: (args: unknown) => Promise<unknown>;
   transactionResult?: AuthenticationUserRecord;
-  transactionError?: unknown;
+  transactionError?: Error;
 }): PrismaAuthenticationUserRepository {
   const prisma = {
     authenticationUser: {
@@ -91,10 +104,7 @@ describe('PrismaAuthenticationUserRepository', () => {
   });
 
   it('maps Prisma unique violations to RepositoryUniqueConstraintError', async () => {
-    const prismaError = {
-      code: 'P2002',
-      meta: { target: ['email'] },
-    };
+    const prismaError = createPrismaError('P2002', { target: ['email'] });
     const repository = createRepository({ transactionError: prismaError });
     const user = User.create({
       uuid: randomUUID(),
@@ -112,7 +122,7 @@ describe('PrismaAuthenticationUserRepository', () => {
 
   it('maps Prisma not-found violations to RepositoryNotFoundError', async () => {
     const repository = createRepository({
-      transactionError: { code: 'P2025' },
+      transactionError: createPrismaError('P2025'),
     });
     const user = User.create({ uuid: randomUUID(), username: 'missing' });
 
