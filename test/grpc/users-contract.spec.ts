@@ -28,8 +28,7 @@ describe('Users gRPC contract', () => {
     expect(service?.service).toBeDefined();
 
     const serviceDefinition = service?.service as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     const methods = Object.keys(serviceDefinition ?? {});
 
     expect(methods).toHaveLength(5);
