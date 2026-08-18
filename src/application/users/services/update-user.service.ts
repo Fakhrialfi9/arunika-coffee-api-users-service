@@ -59,10 +59,12 @@ export class UpdateUserService {
     try {
       return this.toResult(await this.users.update(user));
     } catch (error) {
-      if (error instanceof RepositoryUniqueConstraintError)
+      if (error instanceof RepositoryUniqueConstraintError) {
         throw new UserAlreadyExistsError(error.field);
-      if (error instanceof RepositoryNotFoundError)
+      }
+      if (error instanceof RepositoryNotFoundError) {
         throw new UserNotFoundError(uuid);
+      }
       throw error;
     }
   }
@@ -76,22 +78,25 @@ export class UpdateUserService {
       dto.username !== null &&
       dto.username !== user.username &&
       (await this.users.existsByUsername(dto.username, user.uuid))
-    )
+    ) {
       throw new UserAlreadyExistsError('username');
+    }
     if (
       dto.email !== undefined &&
       dto.email !== null &&
       dto.email !== user.email &&
       (await this.users.existsByEmail(dto.email, user.uuid))
-    )
+    ) {
       throw new UserAlreadyExistsError('email');
+    }
     if (
       dto.phone !== undefined &&
       dto.phone !== null &&
       dto.phone !== user.phone &&
       (await this.users.existsByPhone(dto.phone, user.uuid))
-    )
+    ) {
       throw new UserAlreadyExistsError('phone');
+    }
   }
 
   private applyChanges(user: User, dto: UpdateUserDto): void {
@@ -106,12 +111,23 @@ export class UpdateUserService {
       if (dto.phone !== undefined) changes.phone = dto.phone;
       user.updateIdentity(changes);
     }
-    if (dto.status !== undefined && dto.status !== user.status)
+    if (dto.status !== undefined && dto.status !== user.status) {
       user.changeStatus(dto.status);
-    if (dto.isActive !== undefined && dto.isActive !== user.isActive)
-      dto.isActive ? user.activate() : user.deactivate();
-    if (dto.isVerified !== undefined && dto.isVerified !== user.isVerified)
-      dto.isVerified ? user.verify() : user.unverify();
+    }
+    if (dto.isActive !== undefined && dto.isActive !== user.isActive) {
+      if (dto.isActive) {
+        user.activate();
+      } else {
+        user.deactivate();
+      }
+    }
+    if (dto.isVerified !== undefined && dto.isVerified !== user.isVerified) {
+      if (dto.isVerified) {
+        user.verify();
+      } else {
+        user.unverify();
+      }
+    }
   }
 
   private ensureAtLeastOneField(dto: UpdateUserDto): void {
@@ -123,10 +139,11 @@ export class UpdateUserService {
       dto.isActive,
       dto.isVerified,
     ].some((value) => value !== undefined);
-    if (!hasUpdate)
+    if (!hasUpdate) {
       throw new UpdateUserValidationError([
         'At least one user field must be provided for update',
       ]);
+    }
   }
 
   private validateUuid(uuid: string): void {
