@@ -75,6 +75,14 @@ describe('UsersGrpcController', () => {
     expect(result.user.is_active).toBe(true);
   });
 
+  it('omits absent optional CreateUser fields', async () => {
+    await controller.createUserHandler({ email: 'fakhri@example.com' });
+
+    expect(createUser.execute).toHaveBeenCalledWith({
+      email: 'fakhri@example.com',
+    });
+  });
+
   it('handles GetUser', async () => {
     const result = await controller.getUserHandler({ uuid: user.uuid });
 
@@ -95,12 +103,6 @@ describe('UsersGrpcController', () => {
       page: 2,
       limit: 10,
       search: 'fakhri',
-      username: undefined,
-      email: undefined,
-      phone: undefined,
-      status: undefined,
-      isActive: undefined,
-      isVerified: undefined,
       sortBy: 'email',
       sortOrder: 'asc',
     });
@@ -112,7 +114,7 @@ describe('UsersGrpcController', () => {
     });
   });
 
-  it('handles UpdateUser', async () => {
+  it('handles UpdateUser without forwarding absent optional fields', async () => {
     const result = await controller.updateUserHandler({
       uuid: user.uuid,
       email: 'updated@example.com',
@@ -120,12 +122,8 @@ describe('UsersGrpcController', () => {
     });
 
     expect(updateUser.execute).toHaveBeenCalledWith(user.uuid, {
-      username: undefined,
       email: 'updated@example.com',
-      phone: undefined,
-      status: undefined,
       isActive: false,
-      isVerified: undefined,
     });
     expect(result.user.uuid).toBe(user.uuid);
   });
