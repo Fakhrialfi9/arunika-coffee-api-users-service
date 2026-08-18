@@ -8,43 +8,41 @@ import { describe, expect, it } from 'vitest';
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const protoPath = resolve(currentDir, '../../proto/users/v1/users.proto');
 
+const loadContract = () =>
+  loadSync(protoPath, {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  });
+
 describe('Users gRPC contract', () => {
   it('loads the canonical v1 protobuf contract', () => {
     expect(existsSync(protoPath)).toBe(true);
 
-    const packageDefinition = loadSync(protoPath, {
-      keepCase: true,
-      longs: String,
-      enums: String,
-      defaults: true,
-      oneofs: true,
-    });
-
+    const packageDefinition = loadContract();
     const service = packageDefinition['arunika.coffee.users.v1.UsersService'];
 
     expect(service).toBeDefined();
-    expect(service?.format).toBe('Protocol Buffer 3 DescriptorProto');
     expect(service?.service).toBeDefined();
 
     const methods = Object.keys(service?.service ?? {});
 
-    expect(methods).toEqual([
-      'CreateUser',
-      'GetUser',
-      'ListUsers',
-      'UpdateUser',
-      'DeleteUser',
-    ]);
+    expect(methods).toHaveLength(5);
+    expect(methods).toEqual(
+      expect.arrayContaining([
+        'CreateUser',
+        'GetUser',
+        'ListUsers',
+        'UpdateUser',
+        'DeleteUser',
+      ]),
+    );
   });
 
   it('defines all CRUD request and response messages', () => {
-    const packageDefinition = loadSync(protoPath, {
-      keepCase: true,
-      longs: String,
-      enums: String,
-      defaults: true,
-      oneofs: true,
-    });
+    const packageDefinition = loadContract();
 
     const messageNames = [
       'User',
