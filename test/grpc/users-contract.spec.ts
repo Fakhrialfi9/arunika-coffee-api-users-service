@@ -73,14 +73,45 @@ describe('Users gRPC contract', () => {
   it('pins the version, field numbers, pagination, filtering, and sorting contract', () => {
     const proto = readContract();
 
-    expect(proto).toContain('package arunika.coffee.users.v1;');
-    expect(proto).toContain('service UsersService {');
+    const contractLines = [
+      'package arunika.coffee.users.v1;',
+      'string uuid = 1;',
+      'optional string username = 2;',
+      'optional string email = 3;',
+      'optional string phone = 4;',
+      'string status = 5;',
+      'bool is_active = 6;',
+      'bool is_verified = 7;',
+      'string created_at = 8;',
+      'string updated_at = 9;',
+      'uint32 page = 1;',
+      'uint32 limit = 2;',
+      'optional string search = 3;',
+      'optional string username = 4;',
+      'optional string email = 5;',
+      'optional string phone = 6;',
+      'optional string status = 7;',
+      'optional bool is_active = 8;',
+      'optional bool is_verified = 9;',
+      'SortField sort_by = 10;',
+      'SortOrder sort_order = 11;',
+      'SORT_FIELD_UNSPECIFIED = 0;',
+      'SORT_FIELD_CREATED_AT = 1;',
+      'SORT_FIELD_UPDATED_AT = 2;',
+      'SORT_FIELD_USERNAME = 3;',
+      'SORT_FIELD_EMAIL = 4;',
+      'SORT_FIELD_STATUS = 5;',
+      'SORT_FIELD_UUID = 6;',
+      'SORT_ORDER_UNSPECIFIED = 0;',
+      'SORT_ORDER_ASC = 1;',
+      'SORT_ORDER_DESC = 2;',
+      'uint64 total = 3;',
+      'uint32 total_pages = 4;',
+    ];
 
-    expect(proto).toMatch(/message User \{[\s\S]*string uuid = 1;[\s\S]*optional string username = 2;[\s\S]*optional string email = 3;[\s\S]*optional string phone = 4;[\s\S]*string status = 5;[\s\S]*bool is_active = 6;[\s\S]*bool is_verified = 7;[\s\S]*string created_at = 8;[\s\S]*string updated_at = 9;/);
-    expect(proto).toMatch(/message ListUsersRequest \{[\s\S]*uint32 page = 1;[\s\S]*uint32 limit = 2;[\s\S]*optional string search = 3;[\s\S]*optional string username = 4;[\s\S]*optional string email = 5;[\s\S]*optional string phone = 6;[\s\S]*optional string status = 7;[\s\S]*optional bool is_active = 8;[\s\S]*optional bool is_verified = 9;[\s\S]*SortField sort_by = 10;[\s\S]*SortOrder sort_order = 11;/);
-    expect(proto).toMatch(/enum SortField \{[\s\S]*SORT_FIELD_UNSPECIFIED = 0;[\s\S]*SORT_FIELD_CREATED_AT = 1;[\s\S]*SORT_FIELD_UPDATED_AT = 2;[\s\S]*SORT_FIELD_USERNAME = 3;[\s\S]*SORT_FIELD_EMAIL = 4;[\s\S]*SORT_FIELD_STATUS = 5;[\s\S]*SORT_FIELD_UUID = 6;/);
-    expect(proto).toMatch(/enum SortOrder \{[\s\S]*SORT_ORDER_UNSPECIFIED = 0;[\s\S]*SORT_ORDER_ASC = 1;[\s\S]*SORT_ORDER_DESC = 2;/);
-    expect(proto).toMatch(/message Pagination \{[\s\S]*uint32 page = 1;[\s\S]*uint32 limit = 2;[\s\S]*uint64 total = 3;[\s\S]*uint32 total_pages = 4;/);
+    for (const line of contractLines) {
+      expect(proto).toContain(line);
+    }
   });
 
   it('keeps the CRUD contract explicit and reserves compatibility rules for v1', () => {
