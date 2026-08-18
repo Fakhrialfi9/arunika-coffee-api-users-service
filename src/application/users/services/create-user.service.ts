@@ -7,6 +7,7 @@ import {
   USER_REPOSITORY,
   type UserRepository,
 } from '../../../domain/users/repositories/user.repository.js';
+import { RepositoryUniqueConstraintError } from '../../../infrastructure/database/errors/repository.error.js';
 
 import { CreateUserDto } from '../dto/create-user.dto.js';
 import { CreateUserValidationError } from '../errors/create-user-validation.error.js';
@@ -37,32 +38,16 @@ export class CreateUserService {
       whitelist: true,
       forbidNonWhitelisted: true,
     });
+    const messages = errors.flatMap((error) => Object.values(error.constraints ?? {}));
 
-    const messages = errors.flatMap((error) =>
-      Object.values(error.constraints ?? {}),
-    );
-
-    if (messages.length > 0) {
-      throw new CreateUserValidationError(messages);
-    }
-
+    if (messages.length > 0) throw new CreateUserValidationError(messages);
     if (!dto.username && !dto.email && !dto.phone) {
-      throw new CreateUserValidationError([
-        'At least one of username, email, or phone is required',
-      ]);
+      throw new CreateUserValidationError(['At least one of username, email, or phone is required']);
     }
 
-    if (dto.username && (await this.users.existsByUsername(dto.username))) {
-      throw new UserAlreadyExistsError('username');
-    }
-
-    if (dto.email && (await this.users.existsByEmail(dto.email))) {
-      throw new UserAlreadyExistsError('email');
-    }
-
-    if (dto.phone && (await this.users.existsByPhone(dto.phone))) {
-      throw new UserAlreadyExistsError('phone');
-    }
+    if (dto.username && (await this.users.existsByUsername(dto.username))) throw new UserAlreadyExistsError('username');
+    if (dto.email && (await this.users.existsByEmail(dto.email))) throw new UserAlreadyExistsError('email');
+    if (dto.phone && (await this.users.existsByPhone(dto.phone))) throw new UserAlreadyExistsError('phone');
 
     const user = User.create({
       username: dto.username ?? null,
@@ -71,15 +56,11 @@ export class CreateUserService {
     });
 
     try {
-      const created = await this.users.create(user);
-      return this.toResult(created);
+      return this.toResult(await this.users.create(user));
     } catch (error) {
-      if (this.isUniqueConstraintError(error)) {
-        throw new UserAlreadyExistsError(
-          this.resolveConflictField(error.meta?.target),
-        );
+      if (error instanceof RepositoryUniqueConstraintError) {
+        throw new UserAlreadyExistsError(error.field);
       }
-
       throw error;
     }
   }
@@ -96,28 +77,5 @@ export class CreateUserService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
-  }
-
-  private isUniqueConstraintError(
-    error: unknown,
-  ): error is { code: 'P2002'; meta?: { target?: unknown } } {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 'P2002'
-    );
-  }
-
-  private resolveConflictField(
-    target: unknown,
-  ): 'username' | 'email' | 'phone' {
-    const fields = Array.isArray(target)
-      ? target.map(String)
-      : [String(target)];
-
-    if (fields.includes('email')) return 'email';
-    if (fields.includes('phone')) return 'phone';
-    return 'username';
   }
 }
