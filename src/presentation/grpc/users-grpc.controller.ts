@@ -1,11 +1,15 @@
 import { Controller } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
 
+import type {
+  UserListSortField,
+  UserListSortOrder,
+} from '../../application/users/dto/list-users.dto.js';
 import { CreateUserService } from '../../application/users/services/create-user.service.js';
 import { DeleteUserService } from '../../application/users/services/delete-user.service.js';
 import { GetUserService } from '../../application/users/services/get-user.service.js';
 import { ListUsersService } from '../../application/users/services/list-users.service.js';
 import { UpdateUserService } from '../../application/users/services/update-user.service.js';
-import type { UserListSortField, UserListSortOrder } from '../../application/users/dto/list-users.dto.js';
 
 type GrpcUser = {
   uuid: string;
@@ -57,6 +61,7 @@ export class UsersGrpcController {
     private readonly deleteUser: DeleteUserService,
   ) {}
 
+  @GrpcMethod('UsersService', 'CreateUser')
   async createUserHandler(request: {
     username?: string;
     email?: string;
@@ -71,12 +76,14 @@ export class UsersGrpcController {
     return { user: this.toGrpcUser(user) };
   }
 
+  @GrpcMethod('UsersService', 'GetUser')
   async getUserHandler(request: { uuid: string }): Promise<{ user: GrpcUser }> {
     const user = await this.getUser.execute({ uuid: request.uuid });
 
     return { user: this.toGrpcUser(user) };
   }
 
+  @GrpcMethod('UsersService', 'ListUsers')
   async listUsersHandler(
     request: GrpcListUsersRequest,
   ): Promise<{
@@ -113,6 +120,7 @@ export class UsersGrpcController {
     };
   }
 
+  @GrpcMethod('UsersService', 'UpdateUser')
   async updateUserHandler(request: {
     uuid: string;
     username?: string;
@@ -134,6 +142,7 @@ export class UsersGrpcController {
     return { user: this.toGrpcUser(user) };
   }
 
+  @GrpcMethod('UsersService', 'DeleteUser')
   async deleteUserHandler(request: {
     uuid: string;
   }): Promise<{ uuid: string; deleted: boolean }> {
