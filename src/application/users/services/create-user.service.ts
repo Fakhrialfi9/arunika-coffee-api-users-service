@@ -38,16 +38,23 @@ export class CreateUserService {
       whitelist: true,
       forbidNonWhitelisted: true,
     });
-    const messages = errors.flatMap((error) => Object.values(error.constraints ?? {}));
+    const messages = errors.flatMap((error) =>
+      Object.values(error.constraints ?? {}),
+    );
 
     if (messages.length > 0) throw new CreateUserValidationError(messages);
     if (!dto.username && !dto.email && !dto.phone) {
-      throw new CreateUserValidationError(['At least one of username, email, or phone is required']);
+      throw new CreateUserValidationError([
+        'At least one of username, email, or phone is required',
+      ]);
     }
 
-    if (dto.username && (await this.users.existsByUsername(dto.username))) throw new UserAlreadyExistsError('username');
-    if (dto.email && (await this.users.existsByEmail(dto.email))) throw new UserAlreadyExistsError('email');
-    if (dto.phone && (await this.users.existsByPhone(dto.phone))) throw new UserAlreadyExistsError('phone');
+    if (dto.username && (await this.users.existsByUsername(dto.username)))
+      throw new UserAlreadyExistsError('username');
+    if (dto.email && (await this.users.existsByEmail(dto.email)))
+      throw new UserAlreadyExistsError('email');
+    if (dto.phone && (await this.users.existsByPhone(dto.phone)))
+      throw new UserAlreadyExistsError('phone');
 
     const user = User.create({
       username: dto.username ?? null,

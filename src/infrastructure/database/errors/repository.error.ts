@@ -12,7 +12,10 @@ export type UserUniqueField = 'username' | 'email' | 'phone';
 export class RepositoryUniqueConstraintError extends RepositoryError {
   readonly code = 'REPOSITORY_UNIQUE_CONSTRAINT';
 
-  constructor(public readonly field: UserUniqueField, cause?: unknown) {
+  constructor(
+    public readonly field: UserUniqueField,
+    cause?: unknown,
+  ) {
     super(`Unique constraint violated for ${field}`, { cause });
   }
 }
