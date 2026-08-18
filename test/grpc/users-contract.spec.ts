@@ -60,7 +60,9 @@ describe('Users gRPC contract', () => {
     ];
 
     for (const name of messageNames) {
-      expect(packageDefinition[`arunika.coffee.users.v1.${name}`]).toBeDefined();
+      expect(
+        packageDefinition[`arunika.coffee.users.v1.${name}`],
+      ).toBeDefined();
     }
   });
 });
