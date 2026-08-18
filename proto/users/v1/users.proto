@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package arunika.coffee.users.v1;
+
+// Stable internal Users Service contract.
+// Do not reuse field numbers for different meanings. Reserve removed fields.
+service UsersService {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+}
+
+message User {
+  string uuid = 1;
+  optional string username = 2;
+  optional string email = 3;
+  optional string phone = 4;
+  string status = 5;
+  bool is_active = 6;
+  bool is_verified = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+message CreateUserRequest {
+  optional string username = 1;
+  optional string email = 2;
+  optional string phone = 3;
+}
+
+message CreateUserResponse {
+  User user = 1;
+}
+
+message GetUserRequest {
+  string uuid = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message ListUsersRequest {
+  uint32 page = 1;
+  uint32 limit = 2;
+  optional string search = 3;
+  optional string username = 4;
+  optional string email = 5;
+  optional string phone = 6;
+  optional string status = 7;
+  optional bool is_active = 8;
+  optional bool is_verified = 9;
+  SortField sort_by = 10;
+  SortOrder sort_order = 11;
+}
+
+enum SortField {
+  SORT_FIELD_UNSPECIFIED = 0;
+  SORT_FIELD_CREATED_AT = 1;
+  SORT_FIELD_UPDATED_AT = 2;
+  SORT_FIELD_USERNAME = 3;
+  SORT_FIELD_EMAIL = 4;
+  SORT_FIELD_STATUS = 5;
+  SORT_FIELD_UUID = 6;
+}
+
+enum SortOrder {
+  SORT_ORDER_UNSPECIFIED = 0;
+  SORT_ORDER_ASC = 1;
+  SORT_ORDER_DESC = 2;
+}
+
+message ListUsersResponse {
+  repeated User items = 1;
+  Pagination pagination = 2;
+}
+
+message Pagination {
+  uint32 page = 1;
+  uint32 limit = 2;
+  uint64 total = 3;
+  uint32 total_pages = 4;
+}
+
+message UpdateUserRequest {
+  string uuid = 1;
+  optional string username = 2;
+  optional string email = 3;
+  optional string phone = 4;
+  optional string status = 5;
+  optional bool is_active = 6;
+  optional bool is_verified = 7;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  string uuid = 1;
+}
+
+message DeleteUserResponse {
+  string uuid = 1;
+  bool deleted = 2;
+}
