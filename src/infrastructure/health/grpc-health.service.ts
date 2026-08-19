@@ -41,7 +41,7 @@ export class GrpcHealthService implements OnModuleDestroy {
     this.refreshTimer.unref();
   }
 
-  private async refresh(): Promise<void> {
+  async refresh(): Promise<void> {
     if (this.healthImplementation === undefined) {
       return;
     }
