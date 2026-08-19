@@ -26,7 +26,9 @@ export const resolveRequestId = (metadata: Metadata | undefined): string => {
     : uuid();
 };
 
-const getErrorContext = (error: unknown): {
+const getErrorContext = (
+  error: unknown,
+): {
   errorType: string;
   errorMessage: string;
   errorCode?: number | string;
