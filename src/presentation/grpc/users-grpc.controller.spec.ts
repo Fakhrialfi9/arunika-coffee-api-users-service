@@ -141,22 +141,22 @@ describe('UsersGrpcController', () => {
         page: 1.5,
         sort_by: 'SORT_FIELD_CREATED_AT',
       }),
-    ).rejects.toSatisfy((error: unknown) =>
-      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    ).rejects.toSatisfy(
+      (error: unknown) => getGrpcErrorCode(error) === status.INVALID_ARGUMENT,
     );
   });
 
   it('rejects unsupported protobuf enums as INVALID_ARGUMENT', async () => {
     await expect(
       controller.listUsersHandler({ sort_by: 'INVALID_SORT_FIELD' }),
-    ).rejects.toSatisfy((error: unknown) =>
-      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    ).rejects.toSatisfy(
+      (error: unknown) => getGrpcErrorCode(error) === status.INVALID_ARGUMENT,
     );
 
     await expect(
       controller.listUsersHandler({ sort_order: 'INVALID_SORT_ORDER' }),
-    ).rejects.toSatisfy((error: unknown) =>
-      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    ).rejects.toSatisfy(
+      (error: unknown) => getGrpcErrorCode(error) === status.INVALID_ARGUMENT,
     );
   });
 
