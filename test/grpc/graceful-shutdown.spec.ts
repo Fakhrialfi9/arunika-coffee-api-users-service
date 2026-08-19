@@ -103,6 +103,7 @@ describe('gRPC graceful shutdown', () => {
       .useValue({
         $connect: vi.fn().mockResolvedValue(undefined),
         $disconnect: disconnect,
+        onApplicationShutdown: disconnect,
       })
       .compile();
 
