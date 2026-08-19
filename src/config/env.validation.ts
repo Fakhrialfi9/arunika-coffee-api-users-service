@@ -171,8 +171,7 @@ function validateProductionEnvironment(config: EnvironmentVariables): void {
   const databaseUrl = new URL(config.DATABASE_URL);
   const databasePassword = config.DATABASE_PASSWORD.trim().toLowerCase();
   const databaseUser = config.DATABASE_USER.trim().toLowerCase();
-  const corsOrigins = config.SECURITY_CORS_ORIGINS
-    .split(',')
+  const corsOrigins = config.SECURITY_CORS_ORIGINS.split(',')
     .map((origin) => origin.trim().toLowerCase())
     .filter(Boolean);
 
@@ -185,9 +184,7 @@ function validateProductionEnvironment(config: EnvironmentVariables): void {
   }
 
   if (databaseUser === 'root' || WEAK_PRODUCTION_SECRETS.has(databaseUser)) {
-    throw new Error(
-      'DATABASE_USER must use a dedicated production credential',
-    );
+    throw new Error('DATABASE_USER must use a dedicated production credential');
   }
 
   if (WEAK_PRODUCTION_SECRETS.has(databasePassword)) {
