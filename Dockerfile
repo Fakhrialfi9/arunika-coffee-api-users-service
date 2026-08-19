@@ -5,6 +5,10 @@ FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 
 ENV NODE_ENV=development
+# Prisma 7 loads prisma.config.js during `prisma generate` and requires
+# DATABASE_URL even though the build does not connect to the database.
+# Use a non-secret build-time placeholder; runtime receives the real URL.
+ENV DATABASE_URL=mysql://localhost:3306/arunika_coffee_users
 
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci

@@ -24,7 +24,7 @@ const healthPackage = loaded.grpc?.health?.v1;
 const HealthClient = healthPackage?.Health;
 
 if (!HealthClient) {
-  console.error('gRPC health client is unavailable');
+  process.stderr.write('gRPC health client is unavailable\n');
   process.exit(1);
 }
 
