@@ -39,19 +39,19 @@ type GrpcListUsersRequest = {
   sort_order?: string | number;
 };
 
-const SORT_FIELDS: Record<string, UserListSortField> = {
+const SORT_FIELDS = {
   SORT_FIELD_CREATED_AT: 'createdAt',
   SORT_FIELD_UPDATED_AT: 'updatedAt',
   SORT_FIELD_USERNAME: 'username',
   SORT_FIELD_EMAIL: 'email',
   SORT_FIELD_STATUS: 'status',
   SORT_FIELD_UUID: 'uuid',
-};
+} as const satisfies Record<string, UserListSortField>;
 
-const SORT_ORDERS: Record<string, UserListSortOrder> = {
+const SORT_ORDERS = {
   SORT_ORDER_ASC: 'asc',
   SORT_ORDER_DESC: 'desc',
-};
+} as const satisfies Record<string, UserListSortOrder>;
 
 @Controller()
 export class UsersGrpcController {
@@ -198,8 +198,11 @@ export class UsersGrpcController {
       return 'createdAt';
     }
 
-    if (typeof value === 'string' && value in SORT_FIELDS) {
-      return SORT_FIELDS[value];
+    if (typeof value === 'string') {
+      const sortField = SORT_FIELDS[value as keyof typeof SORT_FIELDS];
+      if (sortField !== undefined) {
+        return sortField;
+      }
     }
 
     throw new RpcException({
@@ -217,8 +220,11 @@ export class UsersGrpcController {
       return 'desc';
     }
 
-    if (typeof value === 'string' && value in SORT_ORDERS) {
-      return SORT_ORDERS[value];
+    if (typeof value === 'string') {
+      const sortOrder = SORT_ORDERS[value as keyof typeof SORT_ORDERS];
+      if (sortOrder !== undefined) {
+        return sortOrder;
+      }
     }
 
     throw new RpcException({
