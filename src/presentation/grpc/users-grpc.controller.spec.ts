@@ -27,9 +27,7 @@ const getGrpcErrorCode = (error: unknown): number | undefined => {
   }
 
   const rpcError = error.error;
-  return typeof rpcError === 'object' &&
-    rpcError !== null &&
-    'code' in rpcError
+  return typeof rpcError === 'object' && rpcError !== null && 'code' in rpcError
     ? Number(rpcError.code)
     : undefined;
 };
