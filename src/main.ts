@@ -28,7 +28,11 @@ async function bootstrap(): Promise<void> {
       maxReceiveMessageLength: config.securityGrpcMaxMessageBytes,
       maxSendMessageLength: config.securityGrpcMaxMessageBytes,
       onLoadPackageDefinition: (_packageDefinition, server) => {
-        healthService?.attach(server);
+        if (healthService === undefined) {
+          throw new Error('gRPC health service is not initialized');
+        }
+
+        healthService.attach(server);
       },
       loader: {
         keepCase: true,
