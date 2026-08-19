@@ -11,7 +11,7 @@ import { AppModule } from '../../src/app.module.js';
 
 const PROTO_PATH = join(process.cwd(), 'proto/users/v1/users.proto');
 const PACKAGE = 'arunika.coffee.users.v1';
-const TEST_ADDRESS = '127.0.0.1:50052';
+const TEST_ADDRESS = '127.0.0.1:50051';
 
 type UsersClient = grpc.Client;
 
@@ -81,6 +81,12 @@ const unary = <TRequest, TResponse>(
         reject(error);
         return;
       }
+
+      if (response === undefined) {
+        reject(new Error(`gRPC method ${method} returned an empty response`));
+        return;
+      }
+
       resolve(response);
     });
   });

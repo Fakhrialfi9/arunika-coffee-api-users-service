@@ -17,7 +17,7 @@ process.env.DATABASE_PASSWORD ??= 'ci';
 process.env.DATABASE_URL ??=
   'mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users';
 process.env.GRPC_USERS_HOST ??= '127.0.0.1';
-process.env.GRPC_USERS_PORT ??= '50052';
+process.env.GRPC_USERS_PORT ??= '50051';
 process.env.USERS_GRPC_TIMEOUT_MS ??= '3000';
 process.env.SECURITY_CORS_ORIGINS ??= 'http://localhost:3000';
 process.env.SECURITY_RATE_LIMIT_TTL ??= '60000';
