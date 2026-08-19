@@ -1,5 +1,6 @@
+import { status } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 
 import type { UserListSortField, UserListSortOrder } from '../../application/users/dto/list-users.dto.js';
 import { CreateUserService } from '../../application/users/services/create-user.service.js';
@@ -32,12 +33,7 @@ export class UsersGrpcController {
   @GrpcMethod('UsersService', 'ListUsers')
   async listUsersHandler(request: GrpcListUsersRequest): Promise<{ items: GrpcUser[]; pagination: { page: number; limit: number; total: number; total_pages: number } }> {
     return this.handle(async () => {
-      const result = await this.listUsers.execute({
-        ...(request.page !== undefined && { page: this.toPositiveInteger(request.page, 'page') }),
-        ...(request.limit !== undefined && { limit: this.toPositiveInteger(request.limit, 'limit') }),
-        ...(request.search !== undefined && { search: request.search }), ...(request.username !== undefined && { username: request.username }), ...(request.email !== undefined && { email: request.email }), ...(request.phone !== undefined && { phone: request.phone }), ...(request.status !== undefined && { status: request.status }), ...(request.is_active !== undefined && { isActive: request.is_active }), ...(request.is_verified !== undefined && { isVerified: request.is_verified }),
-        sortBy: this.toSortField(request.sort_by), sortOrder: this.toSortOrder(request.sort_order),
-      });
+      const result = await this.listUsers.execute({ ...(request.page !== undefined && { page: this.toPositiveInteger(request.page, 'page') }), ...(request.limit !== undefined && { limit: this.toPositiveInteger(request.limit, 'limit') }), ...(request.search !== undefined && { search: request.search }), ...(request.username !== undefined && { username: request.username }), ...(request.email !== undefined && { email: request.email }), ...(request.phone !== undefined && { phone: request.phone }), ...(request.status !== undefined && { status: request.status }), ...(request.is_active !== undefined && { isActive: request.is_active }), ...(request.is_verified !== undefined && { isVerified: request.is_verified }), sortBy: this.toSortField(request.sort_by), sortOrder: this.toSortOrder(request.sort_order) });
       return { items: result.items.map((user) => this.toGrpcUser(user)), pagination: { page: result.pagination.page, limit: result.pagination.limit, total: result.pagination.total, total_pages: result.pagination.totalPages } };
     });
   }
@@ -48,18 +44,10 @@ export class UsersGrpcController {
   }
 
   @GrpcMethod('UsersService', 'DeleteUser')
-  async deleteUserHandler(request: { uuid: string }): Promise<{ uuid: string; deleted: boolean }> {
-    return this.handle(async () => { await this.deleteUser.execute({ uuid: request.uuid }); return { uuid: request.uuid, deleted: true }; });
-  }
+  async deleteUserHandler(request: { uuid: string }): Promise<{ uuid: string; deleted: boolean }> { return this.handle(async () => { await this.deleteUser.execute({ uuid: request.uuid }); return { uuid: request.uuid, deleted: true }; }); }
 
-  private async handle<T>(operation: () => Promise<T>): Promise<T> {
-    try { return await operation(); } catch (error) { throw toGrpcException(error); }
-  }
-
-  private toPositiveInteger(value: number, field: string): number {
-    if (!Number.isInteger(value) || value < 1) throw new Error(`${field} must be a positive integer`);
-    return value;
-  }
+  private async handle<T>(operation: () => Promise<T>): Promise<T> { try { return await operation(); } catch (error) { throw toGrpcException(error); } }
+  private toPositiveInteger(value: number, field: string): number { if (!Number.isInteger(value) || value < 1) throw new RpcException({ code: status.INVALID_ARGUMENT, message: `${field} must be a positive integer` }); return value; }
   private toSortField(value: string | number | undefined): UserListSortField { return typeof value === 'string' && SORT_FIELDS[value] ? SORT_FIELDS[value] : 'createdAt'; }
   private toSortOrder(value: string | number | undefined): UserListSortOrder { return typeof value === 'string' && SORT_ORDERS[value] ? SORT_ORDERS[value] : 'desc'; }
   private toGrpcUser(user: { uuid: string; username: string | null; email: string | null; phone: string | null; status: string; isActive: boolean; isVerified: boolean; createdAt: Date; updatedAt: Date }): GrpcUser { return { uuid: user.uuid, username: user.username, email: user.email, phone: user.phone, status: user.status, is_active: user.isActive, is_verified: user.isVerified, created_at: user.createdAt.toISOString(), updated_at: user.updatedAt.toISOString() }; }
