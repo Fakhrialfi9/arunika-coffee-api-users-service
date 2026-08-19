@@ -190,7 +190,11 @@ export class UsersGrpcController {
   }
 
   private toSortField(value: string | number | undefined): UserListSortField {
-    if (value === undefined || value === 'SORT_FIELD_UNSPECIFIED' || value === 0) {
+    if (
+      value === undefined ||
+      value === 'SORT_FIELD_UNSPECIFIED' ||
+      value === 0
+    ) {
       return 'createdAt';
     }
 
@@ -205,7 +209,11 @@ export class UsersGrpcController {
   }
 
   private toSortOrder(value: string | number | undefined): UserListSortOrder {
-    if (value === undefined || value === 'SORT_ORDER_UNSPECIFIED' || value === 0) {
+    if (
+      value === undefined ||
+      value === 'SORT_ORDER_UNSPECIFIED' ||
+      value === 0
+    ) {
       return 'desc';
     }
 

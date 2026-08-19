@@ -25,23 +25,27 @@ describe('toGrpcException', () => {
   });
 
   it('maps validation errors to INVALID_ARGUMENT', () => {
-    expect(getCode(toGrpcException(new CreateUserValidationError('invalid email')))).toBe(
-      status.INVALID_ARGUMENT,
-    );
+    expect(
+      getCode(toGrpcException(new CreateUserValidationError('invalid email'))),
+    ).toBe(status.INVALID_ARGUMENT);
   });
 
   it('maps missing users to NOT_FOUND', () => {
-    expect(getCode(toGrpcException(new UserNotFoundError('missing')))).toBe(status.NOT_FOUND);
-  });
-
-  it('maps duplicate users to ALREADY_EXISTS', () => {
-    expect(getCode(toGrpcException(new UserAlreadyExistsError('duplicate')))).toBe(
-      status.ALREADY_EXISTS,
+    expect(getCode(toGrpcException(new UserNotFoundError('missing')))).toBe(
+      status.NOT_FOUND,
     );
   });
 
+  it('maps duplicate users to ALREADY_EXISTS', () => {
+    expect(
+      getCode(toGrpcException(new UserAlreadyExistsError('duplicate'))),
+    ).toBe(status.ALREADY_EXISTS);
+  });
+
   it('does not leak unexpected internal errors', () => {
-    const exception = toGrpcException(new Error('database credentials: secret'));
+    const exception = toGrpcException(
+      new Error('database credentials: secret'),
+    );
     expect(getCode(exception)).toBe(status.INTERNAL);
     expect(exception.getError()).toMatchObject({
       message: 'Internal server error',

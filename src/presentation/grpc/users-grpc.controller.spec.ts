@@ -1,5 +1,5 @@
 import { status } from '@grpc/grpc-js';
-import { RpcException } from '@nestjs/microservices';
+import type { RpcException } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -127,7 +127,10 @@ describe('UsersGrpcController', () => {
 
   it('rejects malformed pagination as INVALID_ARGUMENT', async () => {
     await expect(
-      controller.listUsersHandler({ page: 1.5, sort_by: 'SORT_FIELD_CREATED_AT' }),
+      controller.listUsersHandler({
+        page: 1.5,
+        sort_by: 'SORT_FIELD_CREATED_AT',
+      }),
     ).rejects.toMatchObject<RpcException>({
       error: { code: status.INVALID_ARGUMENT },
     });
