@@ -30,7 +30,7 @@ describe('Users CRUD repository integration', () => {
         where: { uuid: { in: uuids } },
       });
     }
-    await prisma.onModuleDestroy();
+    await prisma.$disconnect();
   });
 
   it('creates and reads a user by UUID', async () => {
