@@ -1,5 +1,4 @@
 import { status } from '@grpc/grpc-js';
-import type { RpcException } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,6 +19,19 @@ const user = {
   isVerified: false,
   createdAt: new Date('2026-08-18T00:00:00.000Z'),
   updatedAt: new Date('2026-08-18T00:00:00.000Z'),
+};
+
+const getGrpcErrorCode = (error: unknown): number | undefined => {
+  if (!(error instanceof Error) || !('error' in error)) {
+    return undefined;
+  }
+
+  const rpcError = error.error;
+  return typeof rpcError === 'object' &&
+    rpcError !== null &&
+    'code' in rpcError
+    ? Number(rpcError.code)
+    : undefined;
 };
 
 describe('UsersGrpcController', () => {
@@ -131,23 +143,23 @@ describe('UsersGrpcController', () => {
         page: 1.5,
         sort_by: 'SORT_FIELD_CREATED_AT',
       }),
-    ).rejects.toMatchObject<RpcException>({
-      error: { code: status.INVALID_ARGUMENT },
-    });
+    ).rejects.toSatisfy((error: unknown) =>
+      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    );
   });
 
   it('rejects unsupported protobuf enums as INVALID_ARGUMENT', async () => {
     await expect(
       controller.listUsersHandler({ sort_by: 'INVALID_SORT_FIELD' }),
-    ).rejects.toMatchObject<RpcException>({
-      error: { code: status.INVALID_ARGUMENT },
-    });
+    ).rejects.toSatisfy((error: unknown) =>
+      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    );
 
     await expect(
       controller.listUsersHandler({ sort_order: 'INVALID_SORT_ORDER' }),
-    ).rejects.toMatchObject<RpcException>({
-      error: { code: status.INVALID_ARGUMENT },
-    });
+    ).rejects.toSatisfy((error: unknown) =>
+      expect(getGrpcErrorCode(error)).toBe(status.INVALID_ARGUMENT),
+    );
   });
 
   it('handles UpdateUser without forwarding absent optional fields', async () => {
