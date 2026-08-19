@@ -96,6 +96,12 @@ class EnvironmentVariables {
   @IsNotEmpty()
   SECURITY_BODY_LIMIT = '1mb';
 
+  @Type(() => Number)
+  @IsInt()
+  @Min(1024)
+  @Max(16 * 1024 * 1024)
+  SECURITY_GRPC_MAX_MESSAGE_BYTES = 1024 * 1024;
+
   @IsString()
   @IsNotEmpty()
   SECURITY_TRUST_PROXY = 'loopback';
