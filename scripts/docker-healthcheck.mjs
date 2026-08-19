@@ -4,7 +4,10 @@ import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 import { protoPath } from 'grpc-health-check';
 
-const host = process.env.APP_HOST === '0.0.0.0' ? '127.0.0.1' : (process.env.APP_HOST ?? '127.0.0.1');
+const host =
+  process.env.APP_HOST === '0.0.0.0'
+    ? '127.0.0.1'
+    : (process.env.APP_HOST ?? '127.0.0.1');
 const port = process.env.GRPC_USERS_PORT ?? '50051';
 const target = `${host}:${port}`;
 
@@ -26,15 +29,18 @@ if (!HealthClient) {
 }
 
 const client = new HealthClient(target, grpc.credentials.createInsecure());
-
 const deadline = new Date(Date.now() + 4000);
 
-client.check({ service: 'liveness' }, (error, response) => {
-  client.close();
+client.check(
+  { service: 'liveness' },
+  (error, response) => {
+    client.close();
 
-  if (error || response?.status !== 1) {
-    process.exit(1);
-  }
+    if (error || (response?.status !== 'SERVING' && response?.status !== 1)) {
+      process.exit(1);
+    }
 
-  process.exit(0);
-}, { deadline });
+    process.exit(0);
+  },
+  { deadline },
+);
