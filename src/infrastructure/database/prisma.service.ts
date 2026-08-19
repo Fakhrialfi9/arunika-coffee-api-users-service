@@ -25,10 +25,14 @@ export class PrismaService
 
     const adapter = new PrismaMariaDb({
       host: url.hostname,
-      port: Number(url.port || 3306),
+      port: Number(url.port || process.env.DATABASE_PORT || 3306),
       user: decodeURIComponent(url.username),
       password: decodeURIComponent(url.password),
       database,
+      connectionLimit: Number(process.env.DATABASE_POOL_CONNECTION_LIMIT ?? 10),
+      connectTimeout: Number(process.env.DATABASE_CONNECT_TIMEOUT_MS ?? 5000),
+      acquireTimeout: Number(process.env.DATABASE_ACQUIRE_TIMEOUT_MS ?? 10000),
+      idleTimeout: Number(process.env.DATABASE_POOL_IDLE_TIMEOUT_SEC ?? 300),
     });
 
     super({ adapter });
