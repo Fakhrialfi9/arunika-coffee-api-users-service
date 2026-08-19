@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 
 import * as grpc from '@grpc/grpc-js';
-import { loadPackageDefinition } from '@grpc/proto-loader';
+import { load } from '@grpc/proto-loader';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -95,7 +95,7 @@ describe('UsersService gRPC integration', () => {
 
     await app.listen();
 
-    const packageDefinition = await loadPackageDefinition(PROTO_PATH, {
+    const packageDefinition = await load(PROTO_PATH, {
       keepCase: true,
       longs: String,
       enums: String,

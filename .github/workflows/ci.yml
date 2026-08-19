@@ -79,6 +79,11 @@ jobs:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
         run: npm run test:e2e
 
+      - name: gRPC integration tests
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run test:grpc
+
       - name: Build
         env:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users

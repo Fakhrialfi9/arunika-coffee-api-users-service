@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['test/grpc/**/*.spec.ts'],
-    setupFiles: ['./test/e2e/setup.ts'],
+    setupFiles: ['./test/grpc/setup.ts'],
     testTimeout: 30_000,
     hookTimeout: 30_000,
   },
