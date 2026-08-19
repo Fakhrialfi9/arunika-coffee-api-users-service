@@ -12,7 +12,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     services:
       mysql:
@@ -127,3 +127,75 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Build Docker image
+        run: docker build --tag arunika-coffee-users-service:ci .
+
+      - name: Run Docker container smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          container_name="arunika-coffee-users-service-ci"
+
+          cleanup() {
+            docker rm -f "$container_name" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run --detach \
+            --name "$container_name" \
+            --network host \
+            --env NODE_ENV=test \
+            --env APP_NAME=arunika-coffee-api-users-service \
+            --env APP_HOST=0.0.0.0 \
+            --env APP_PORT=3000 \
+            --env DATABASE_HOST=127.0.0.1 \
+            --env DATABASE_PORT=3306 \
+            --env DATABASE_NAME=arunika_coffee_users \
+            --env DATABASE_USER=ci \
+            --env DATABASE_PASSWORD=ci \
+            --env DATABASE_URL=mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users \
+            --env DATABASE_POOL_CONNECTION_LIMIT=10 \
+            --env DATABASE_CONNECT_TIMEOUT_MS=5000 \
+            --env DATABASE_ACQUIRE_TIMEOUT_MS=10000 \
+            --env DATABASE_POOL_IDLE_TIMEOUT_SEC=300 \
+            --env GRPC_USERS_HOST=0.0.0.0 \
+            --env GRPC_USERS_PORT=50051 \
+            --env USERS_GRPC_TIMEOUT_MS=3000 \
+            --env SECURITY_CORS_ORIGINS=http://localhost:3000 \
+            --env SECURITY_RATE_LIMIT_TTL=60000 \
+            --env SECURITY_RATE_LIMIT_MAX=100 \
+            --env SECURITY_BODY_LIMIT=1mb \
+            --env SECURITY_GRPC_MAX_MESSAGE_BYTES=1048576 \
+            --env SECURITY_TRUST_PROXY=loopback \
+            --env LOG_ENABLED=false \
+            --env LOG_LEVEL=warn \
+            --env OTEL_SERVICE_NAME=arunika-coffee-api-users-service \
+            --env OTEL_TRACING_ENABLED=false \
+            --env OTEL_TRACES_SAMPLER_ARG=0 \
+            --env OTEL_METRICS_ENABLED=false \
+            --env OTEL_METRIC_EXPORT_INTERVAL=60000 \
+            arunika-coffee-users-service:ci
+
+          for attempt in $(seq 1 30); do
+            status="$(docker inspect --format='{{.State.Health.Status}}' "$container_name")"
+
+            case "$status" in
+              healthy)
+                echo "Docker container healthcheck: healthy"
+                exit 0
+                ;;
+              unhealthy)
+                echo "Docker container healthcheck: unhealthy"
+                docker logs "$container_name"
+                exit 1
+                ;;
+            esac
+
+            sleep 2
+          done
+
+          echo "Docker container did not become healthy in time"
+          docker logs "$container_name"
+          exit 1
