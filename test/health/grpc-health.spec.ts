@@ -12,10 +12,7 @@ import { DatabaseHealthService } from '../../src/infrastructure/database/databas
 import { GrpcHealthService } from '../../src/infrastructure/health/grpc-health.service.js';
 
 const TEST_ADDRESS = '127.0.0.1:50053';
-const USERS_PROTO_PATH = join(
-  process.cwd(),
-  'proto/users/v1/users.proto',
-);
+const USERS_PROTO_PATH = join(process.cwd(), 'proto/users/v1/users.proto');
 
 const SERVICE_NAMES = {
   overall: '',
