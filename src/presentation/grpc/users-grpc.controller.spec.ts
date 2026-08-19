@@ -1,3 +1,5 @@
+import { status } from '@grpc/grpc-js';
+import { RpcException } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -34,12 +36,7 @@ describe('UsersGrpcController', () => {
     listUsers = {
       execute: vi.fn().mockResolvedValue({
         items: [user],
-        pagination: {
-          page: 1,
-          limit: 20,
-          total: 1,
-          totalPages: 1,
-        },
+        pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
       }),
     };
     updateUser = { execute: vi.fn().mockResolvedValue(user) };
@@ -111,6 +108,42 @@ describe('UsersGrpcController', () => {
       limit: 20,
       total: 1,
       total_pages: 1,
+    });
+  });
+
+  it('maps protobuf scalar and enum defaults to application defaults', async () => {
+    await controller.listUsersHandler({
+      page: 0,
+      limit: 0,
+      sort_by: 'SORT_FIELD_UNSPECIFIED',
+      sort_order: 'SORT_ORDER_UNSPECIFIED',
+    });
+
+    expect(listUsers.execute).toHaveBeenCalledWith({
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+    });
+  });
+
+  it('rejects malformed pagination as INVALID_ARGUMENT', async () => {
+    await expect(
+      controller.listUsersHandler({ page: 1.5, sort_by: 'SORT_FIELD_CREATED_AT' }),
+    ).rejects.toMatchObject<RpcException>({
+      error: { code: status.INVALID_ARGUMENT },
+    });
+  });
+
+  it('rejects unsupported protobuf enums as INVALID_ARGUMENT', async () => {
+    await expect(
+      controller.listUsersHandler({ sort_by: 'INVALID_SORT_FIELD' }),
+    ).rejects.toMatchObject<RpcException>({
+      error: { code: status.INVALID_ARGUMENT },
+    });
+
+    await expect(
+      controller.listUsersHandler({ sort_order: 'INVALID_SORT_ORDER' }),
+    ).rejects.toMatchObject<RpcException>({
+      error: { code: status.INVALID_ARGUMENT },
     });
   });
 
