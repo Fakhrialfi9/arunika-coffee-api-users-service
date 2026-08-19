@@ -24,6 +24,7 @@ type GrpcUser = {
   created_at: string;
   updated_at: string;
 };
+
 type GrpcListUsersRequest = {
   page?: number;
   limit?: number;
@@ -46,6 +47,7 @@ const SORT_FIELDS: Record<string, UserListSortField> = {
   SORT_FIELD_STATUS: 'status',
   SORT_FIELD_UUID: 'uuid',
 };
+
 const SORT_ORDERS: Record<string, UserListSortOrder> = {
   SORT_ORDER_ASC: 'asc',
   SORT_ORDER_DESC: 'desc',
@@ -97,12 +99,14 @@ export class UsersGrpcController {
   }> {
     return this.handle(async () => {
       const result = await this.listUsers.execute({
-        ...(request.page !== undefined && {
-          page: this.toPositiveInteger(request.page, 'page'),
-        }),
-        ...(request.limit !== undefined && {
-          limit: this.toPositiveInteger(request.limit, 'limit'),
-        }),
+        ...(request.page !== undefined &&
+          request.page !== 0 && {
+            page: this.toPositiveInteger(request.page, 'page'),
+          }),
+        ...(request.limit !== undefined &&
+          request.limit !== 0 && {
+            limit: this.toPositiveInteger(request.limit, 'limit'),
+          }),
         ...(request.search !== undefined && { search: request.search }),
         ...(request.username !== undefined && { username: request.username }),
         ...(request.email !== undefined && { email: request.email }),
@@ -115,6 +119,7 @@ export class UsersGrpcController {
         sortBy: this.toSortField(request.sort_by),
         sortOrder: this.toSortOrder(request.sort_order),
       });
+
       return {
         items: result.items.map((user) => this.toGrpcUser(user)),
         pagination: {
@@ -172,24 +177,48 @@ export class UsersGrpcController {
       throw toGrpcException(error);
     }
   }
+
   private toPositiveInteger(value: number, field: string): number {
-    if (!Number.isInteger(value) || value < 1)
+    if (!Number.isInteger(value) || value < 1) {
       throw new RpcException({
         code: status.INVALID_ARGUMENT,
         message: `${field} must be a positive integer`,
       });
+    }
+
     return value;
   }
+
   private toSortField(value: string | number | undefined): UserListSortField {
-    return typeof value === 'string' && SORT_FIELDS[value]
-      ? SORT_FIELDS[value]
-      : 'createdAt';
+    if (value === undefined || value === 'SORT_FIELD_UNSPECIFIED' || value === 0) {
+      return 'createdAt';
+    }
+
+    if (typeof value === 'string' && value in SORT_FIELDS) {
+      return SORT_FIELDS[value];
+    }
+
+    throw new RpcException({
+      code: status.INVALID_ARGUMENT,
+      message: 'sort_by contains an unsupported value',
+    });
   }
+
   private toSortOrder(value: string | number | undefined): UserListSortOrder {
-    return typeof value === 'string' && SORT_ORDERS[value]
-      ? SORT_ORDERS[value]
-      : 'desc';
+    if (value === undefined || value === 'SORT_ORDER_UNSPECIFIED' || value === 0) {
+      return 'desc';
+    }
+
+    if (typeof value === 'string' && value in SORT_ORDERS) {
+      return SORT_ORDERS[value];
+    }
+
+    throw new RpcException({
+      code: status.INVALID_ARGUMENT,
+      message: 'sort_order contains an unsupported value',
+    });
   }
+
   private toGrpcUser(user: {
     uuid: string;
     username: string | null;
