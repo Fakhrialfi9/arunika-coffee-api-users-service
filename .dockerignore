@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+.github
+
+# Dependencies and build output
+node_modules
+dist
+coverage
+.nyc_output
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.production.example
+!.env.test.example
+
+# Prisma local/generated artifacts
+prisma/generated
+
+# Local tooling and editor files
+.DS_Store
+.vscode
+.idea
+
+# Documentation and non-runtime files
+README.md
+docs
