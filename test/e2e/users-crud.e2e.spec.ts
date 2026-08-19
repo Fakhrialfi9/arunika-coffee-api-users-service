@@ -36,11 +36,17 @@ describe('Users CRUD repository integration', () => {
   it('creates and reads a user by UUID', async () => {
     const uuid = randomUUID();
     uuids.push(uuid);
+    const phone = `+62812${Number.parseInt(
+      uuid.replaceAll('-', '').slice(0, 8),
+      16,
+    )
+      .toString()
+      .padStart(8, '0')}`;
     const user = User.create({
       uuid,
       username: `crud-${uuid.slice(0, 8)}`,
       email: `crud-${uuid}@example.com`,
-      phone: '+628123456789',
+      phone,
     });
 
     const created = await repository!.create(user);
