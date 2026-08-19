@@ -84,6 +84,11 @@ jobs:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
         run: npm run test:grpc
 
+      - name: Security baseline tests
+        env:
+          DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
+        run: npm run test:security
+
       - name: Build
         env:
           DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users
