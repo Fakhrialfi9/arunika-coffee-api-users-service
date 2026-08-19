@@ -63,7 +63,8 @@ describe('validateEnvironment', () => {
     expect(() =>
       validateEnvironment({
         ...baseEnvironment,
-        SECURITY_CORS_ORIGINS: 'https://app.arunika.coffee,http://localhost:3000',
+        SECURITY_CORS_ORIGINS:
+          'https://app.arunika.coffee,http://localhost:3000',
       }),
     ).toThrow(
       'SECURITY_CORS_ORIGINS must not contain local development origins in production',

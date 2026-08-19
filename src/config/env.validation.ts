@@ -185,7 +185,9 @@ function validateProductionEnvironment(config: EnvironmentVariables): void {
   }
 
   if (databaseUser === 'root' || WEAK_PRODUCTION_SECRETS.has(databaseUser)) {
-    throw new Error('DATABASE_USER must use a dedicated production credential');
+    throw new Error(
+      'DATABASE_USER must use a dedicated production credential',
+    );
   }
 
   if (WEAK_PRODUCTION_SECRETS.has(databasePassword)) {
@@ -204,8 +206,14 @@ function validateProductionEnvironment(config: EnvironmentVariables): void {
     throw new Error('LOG_LEVEL must not be debug or verbose in production');
   }
 
-  if (corsOrigins.some((origin) => origin.includes('localhost') || origin.includes('127.0.0.1'))) {
-    throw new Error('SECURITY_CORS_ORIGINS must not contain local development origins in production');
+  if (
+    corsOrigins.some(
+      (origin) => origin.includes('localhost') || origin.includes('127.0.0.1'),
+    )
+  ) {
+    throw new Error(
+      'SECURITY_CORS_ORIGINS must not contain local development origins in production',
+    );
   }
 }
 
