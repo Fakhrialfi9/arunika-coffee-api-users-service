@@ -26,7 +26,9 @@ describe('toGrpcException', () => {
 
   it('maps validation errors to INVALID_ARGUMENT', () => {
     expect(
-      getCode(toGrpcException(new CreateUserValidationError('invalid email'))),
+      getCode(
+        toGrpcException(new CreateUserValidationError(['invalid email'])),
+      ),
     ).toBe(status.INVALID_ARGUMENT);
   });
 
@@ -37,9 +39,9 @@ describe('toGrpcException', () => {
   });
 
   it('maps duplicate users to ALREADY_EXISTS', () => {
-    expect(
-      getCode(toGrpcException(new UserAlreadyExistsError('duplicate'))),
-    ).toBe(status.ALREADY_EXISTS);
+    expect(getCode(toGrpcException(new UserAlreadyExistsError('email')))).toBe(
+      status.ALREADY_EXISTS,
+    );
   });
 
   it('does not leak unexpected internal errors', () => {
