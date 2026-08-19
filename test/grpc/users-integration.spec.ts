@@ -137,6 +137,12 @@ describe('UsersService gRPC integration', () => {
     const uuid = randomUUID();
     const username = `grpc-${uuid.slice(0, 8)}`;
     const email = `grpc-${uuid}@example.com`;
+    const phone = `+62812${Number.parseInt(
+      uuid.replaceAll('-', '').slice(0, 8),
+      16,
+    )
+      .toString()
+      .padStart(8, '0')}`;
 
     const created = await unary<
       { username: string; email: string; phone: string },
@@ -144,12 +150,13 @@ describe('UsersService gRPC integration', () => {
     >(client!, 'CreateUser', {
       username,
       email,
-      phone: '+628123456789',
+      phone,
     });
 
     expect(created.user.uuid).toBeTruthy();
     expect(created.user.username).toBe(username);
     expect(created.user.email).toBe(email);
+    expect(created.user.phone).toBe(phone);
     expect(created.user.is_active).toBe(true);
     expect(created.user.is_verified).toBe(false);
 
