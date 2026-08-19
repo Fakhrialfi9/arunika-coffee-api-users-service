@@ -1,9 +1,8 @@
 import { Metadata } from '@grpc/grpc-js';
-import {
+import { Injectable, Logger } from '@nestjs/common';
+import type {
   CallHandler,
   ExecutionContext,
-  Injectable,
-  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { catchError, tap, throwError } from 'rxjs';
@@ -56,8 +55,9 @@ export class ObservabilityInterceptor implements NestInterceptor {
   private readonly environment = process.env.NODE_ENV ?? 'development';
 
   intercept(context: ExecutionContext, next: CallHandler) {
-    const args = context.switchToRpc().getArgs();
-    const metadata = args[1] instanceof Metadata ? args[1] : undefined;
+    const metadataContext = context.switchToRpc().getContext<unknown>();
+    const metadata =
+      metadataContext instanceof Metadata ? metadataContext : undefined;
     const requestId = resolveRequestId(metadata);
     const rpc = `${context.getClass().name}.${context.getHandler().name}`;
     const startedAt = performance.now();
