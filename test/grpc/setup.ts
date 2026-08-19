@@ -14,7 +14,8 @@ process.env.DATABASE_PORT ??= '3306';
 process.env.DATABASE_NAME ??= 'arunika_coffee_users';
 process.env.DATABASE_USER ??= 'ci';
 process.env.DATABASE_PASSWORD ??= 'ci';
-process.env.DATABASE_URL ??= 'mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users';
+process.env.DATABASE_URL ??=
+  'mysql://ci:ci@127.0.0.1:3306/arunika_coffee_users';
 process.env.GRPC_USERS_HOST ??= '127.0.0.1';
 process.env.GRPC_USERS_PORT ??= '50052';
 process.env.USERS_GRPC_TIMEOUT_MS ??= '3000';

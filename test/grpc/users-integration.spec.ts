@@ -59,21 +59,23 @@ const unary = <TRequest, TResponse>(
       return;
     }
 
-    (rpc as (request: TRequest, callback: grpc.requestCallback<TResponse>) => void).call(
-      client,
-      request,
-      (error, response) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(response);
-      },
-    );
+    (
+      rpc as (
+        request: TRequest,
+        callback: grpc.requestCallback<TResponse>,
+      ) => void
+    ).call(client, request, (error, response) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(response);
+    });
   });
 
 describe('UsersService gRPC integration', () => {
-  let app: Awaited<ReturnType<typeof NestFactory.createMicroservice>> | undefined;
+  let app:
+    Awaited<ReturnType<typeof NestFactory.createMicroservice>> | undefined;
   let client: UsersClient | undefined;
 
   beforeAll(async () => {
@@ -102,11 +104,11 @@ describe('UsersService gRPC integration', () => {
       defaults: true,
       oneofs: true,
     });
-    const grpcPackage = grpc.loadPackageDefinition(packageDefinition) as unknown as Record<
-      string,
-      Record<string, unknown>
-    >;
-    const service = grpcPackage.arunika?.coffee?.users?.v1?.UsersService as UsersClientConstructor;
+    const grpcPackage = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as Record<string, Record<string, unknown>>;
+    const service = grpcPackage.arunika?.coffee?.users?.v1
+      ?.UsersService as UsersClientConstructor;
 
     client = new service(TEST_ADDRESS, grpc.credentials.createInsecure());
   });
@@ -161,7 +163,9 @@ describe('UsersService gRPC integration', () => {
       sort_order: 'SORT_ORDER_DESC',
     });
 
-    expect(listed.items.some((item) => item.uuid === created.user.uuid)).toBe(true);
+    expect(listed.items.some((item) => item.uuid === created.user.uuid)).toBe(
+      true,
+    );
     expect(listed.pagination.page).toBe(1);
     expect(listed.pagination.limit).toBe(10);
     expect(Number(listed.pagination.total)).toBeGreaterThanOrEqual(1);
