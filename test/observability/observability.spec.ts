@@ -35,7 +35,7 @@ describe('ObservabilityInterceptor', () => {
 
     const executionContext = {
       switchToRpc: () => ({
-        getArgs: () => [{ uuid: 'missing' }, metadata],
+        getContext: () => metadata,
       }),
       getClass: () => ({ name: 'UsersGrpcController' }),
       getHandler: () => ({ name: 'getUserHandler' }),
@@ -67,7 +67,7 @@ describe('ObservabilityInterceptor', () => {
       .mockImplementation(() => undefined);
     const interceptor = new ObservabilityInterceptor();
     const executionContext = {
-      switchToRpc: () => ({ getArgs: () => [{}, undefined] }),
+      switchToRpc: () => ({ getContext: () => undefined }),
       getClass: () => ({ name: 'UsersGrpcController' }),
       getHandler: () => ({ name: 'getUserHandler' }),
     } as never;
