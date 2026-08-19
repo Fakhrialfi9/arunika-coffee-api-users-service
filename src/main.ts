@@ -45,7 +45,7 @@ async function bootstrap(): Promise<void> {
 
   const healthService = app.get(GrpcHealthService);
 
-  app.enableShutdownHooks();
+  app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
   await app.listen();
   await healthService.startMonitoring();
 

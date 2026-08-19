@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 import { PrismaClient } from '../../../prisma/generated/prisma/client.js';
@@ -7,7 +7,7 @@ import { PrismaClient } from '../../../prisma/generated/prisma/client.js';
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
+  implements OnModuleInit, OnApplicationShutdown
 {
   constructor() {
     const databaseUrl = process.env.DATABASE_URL;
@@ -39,7 +39,7 @@ export class PrismaService
     await this.$queryRaw`SELECT 1`;
   }
 
-  async onModuleDestroy(): Promise<void> {
+  async onApplicationShutdown(): Promise<void> {
     await this.$disconnect();
   }
 }

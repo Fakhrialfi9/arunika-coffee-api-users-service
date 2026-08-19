@@ -1,4 +1,5 @@
-import { Injectable, type OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import type { OnApplicationShutdown } from '@nestjs/common';
 import type { Server } from '@grpc/grpc-js';
 import { HealthImplementation } from 'grpc-health-check';
 
@@ -10,7 +11,7 @@ const READINESS = 'readiness';
 const POLL_INTERVAL_MS = 10_000;
 
 @Injectable()
-export class GrpcHealthService implements OnModuleDestroy {
+export class GrpcHealthService implements OnApplicationShutdown {
   private healthImplementation: HealthImplementation | undefined;
   private refreshTimer: NodeJS.Timeout | undefined;
 
@@ -54,7 +55,7 @@ export class GrpcHealthService implements OnModuleDestroy {
     this.healthImplementation.setStatus('', status);
   }
 
-  onModuleDestroy(): void {
+  onApplicationShutdown(): void {
     if (this.refreshTimer !== undefined) {
       clearInterval(this.refreshTimer);
       this.refreshTimer = undefined;
