@@ -41,9 +41,10 @@
     "test:watch": "prisma generate && vitest",
     "test:unit": "prisma generate && vitest run --config vitest.config.ts",
     "test:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts",
+    "test:grpc": "prisma generate && vitest run --config vitest.grpc.config.ts",
     "test:coverage": "prisma generate && vitest run --coverage",
     "test:coverage:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts --coverage",
-    "test:all": "npm run test:unit && npm run test:e2e",
+    "test:all": "npm run test:unit && npm run test:e2e && npm run test:grpc",
 
     "check:fix": "npm run format && npm run lint:fix",
     "check:health": "npm run lint && npm run typecheck && npm run test && npm run format:check && npm run build",
