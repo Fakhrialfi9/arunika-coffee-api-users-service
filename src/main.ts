@@ -17,6 +17,8 @@ async function bootstrap(): Promise<void> {
       package: 'arunika.coffee.users.v1',
       protoPath: join(process.cwd(), 'proto/users/v1/users.proto'),
       url: `${config.grpcUsersHost}:${config.grpcUsersPort}`,
+      maxReceiveMessageLength: config.securityGrpcMaxMessageBytes,
+      maxSendMessageLength: config.securityGrpcMaxMessageBytes,
       loader: {
         keepCase: true,
         longs: String,
