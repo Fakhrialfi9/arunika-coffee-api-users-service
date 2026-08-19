@@ -6,6 +6,7 @@ import { appConfig } from './config/app.config.js';
 import { validateEnvironment } from './config/env.validation.js';
 import { ObservabilityModule } from './observability/observability.module.js';
 import { DatabaseModule } from './infrastructure/database/database.module.js';
+import { HealthModule } from './infrastructure/health/health.module.js';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
@@ -20,6 +21,7 @@ import { AppService } from './app.service.js';
     }),
     ObservabilityModule,
     DatabaseModule,
+    HealthModule,
     UsersModule,
   ],
   controllers: [AppController],
