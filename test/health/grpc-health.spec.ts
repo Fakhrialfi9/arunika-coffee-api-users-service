@@ -91,7 +91,10 @@ describe('gRPC health and readiness', () => {
         package: 'arunika.coffee.users.v1',
         protoPath: [healthCheckProtoPath, USERS_PROTO_PATH],
         url: TEST_ADDRESS,
-        onLoadPackageDefinition: (_packageDefinition, server) => {
+        onLoadPackageDefinition: (
+          _packageDefinition: unknown,
+          server: grpc.Server,
+        ): void => {
           healthService.attach(server);
         },
         loader: {
