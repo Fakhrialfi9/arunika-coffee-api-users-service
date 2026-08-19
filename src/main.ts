@@ -4,12 +4,14 @@ import { join } from 'node:path';
 
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
+import { Logger } from '@nestjs/common';
 
 import { AppModule } from './app.module.js';
 import { appConfig } from './config/app.config.js';
 
 async function bootstrap(): Promise<void> {
   const config = appConfig();
+  const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.GRPC,
@@ -31,6 +33,16 @@ async function bootstrap(): Promise<void> {
 
   app.enableShutdownHooks();
   await app.listen();
+
+  logger.log(
+    JSON.stringify({
+      event: 'service.started',
+      service: config.name,
+      environment: config.environment,
+      transport: 'grpc',
+      address: `${config.grpcUsersHost}:${config.grpcUsersPort}`,
+    }),
+  );
 }
 
 void bootstrap();
