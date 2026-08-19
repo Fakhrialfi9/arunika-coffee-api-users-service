@@ -20,6 +20,18 @@ type UsersClientConstructor = new (
   credentials: grpc.ChannelCredentials,
 ) => UsersClient;
 
+type GrpcPackage = {
+  arunika?: {
+    coffee?: {
+      users?: {
+        v1?: {
+          UsersService?: UsersClientConstructor;
+        };
+      };
+    };
+  };
+};
+
 type GrpcUser = {
   uuid: string;
   username?: string;
@@ -106,9 +118,12 @@ describe('UsersService gRPC integration', () => {
     });
     const grpcPackage = grpc.loadPackageDefinition(
       packageDefinition,
-    ) as unknown as Record<string, Record<string, unknown>>;
-    const service = grpcPackage.arunika?.coffee?.users?.v1
-      ?.UsersService as UsersClientConstructor;
+    ) as unknown as GrpcPackage;
+    const service = grpcPackage.arunika?.coffee?.users?.v1?.UsersService;
+
+    if (service === undefined) {
+      throw new Error(`gRPC service ${PACKAGE}.UsersService is not available`);
+    }
 
     client = new service(TEST_ADDRESS, grpc.credentials.createInsecure());
   });
