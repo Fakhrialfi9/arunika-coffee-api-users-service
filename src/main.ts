@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { join } from 'node:path';
 
+import type { Server } from '@grpc/grpc-js';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
@@ -14,7 +15,7 @@ import { GrpcHealthService } from './infrastructure/health/grpc-health.service.j
 async function bootstrap(): Promise<void> {
   const config = appConfig();
   const logger = new Logger('Bootstrap');
-  let healthService: GrpcHealthService | undefined;
+  let healthService!: GrpcHealthService;
 
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.GRPC,
@@ -27,11 +28,10 @@ async function bootstrap(): Promise<void> {
       url: `${config.grpcUsersHost}:${config.grpcUsersPort}`,
       maxReceiveMessageLength: config.securityGrpcMaxMessageBytes,
       maxSendMessageLength: config.securityGrpcMaxMessageBytes,
-      onLoadPackageDefinition: (_packageDefinition, server) => {
-        if (healthService === undefined) {
-          throw new Error('gRPC health service is not initialized');
-        }
-
+      onLoadPackageDefinition: (
+        _packageDefinition: unknown,
+        server: Server,
+      ): void => {
         healthService.attach(server);
       },
       loader: {
