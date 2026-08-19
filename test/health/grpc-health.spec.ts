@@ -90,9 +90,9 @@ describe('gRPC health and readiness', () => {
         url: TEST_ADDRESS,
         onLoadPackageDefinition: (
           _packageDefinition: unknown,
-          server: grpc.Server,
+          server: unknown,
         ): void => {
-          healthService.attach(server);
+          healthService.attach(server as grpc.Server);
         },
         loader: {
           keepCase: true,
