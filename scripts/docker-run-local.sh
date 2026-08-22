@@ -12,10 +12,12 @@ fi
 
 docker run -d \
   --name "$CONTAINER_NAME" \
+  -p 3000:3000 \
   -p 50051:50051 \
   -e NODE_ENV=development \
   -e APP_NAME=arunika-coffee-api-users-service \
   -e APP_HOST=0.0.0.0 \
+  -e APP_PORT=3000 \
   -e DATABASE_HOST=host.docker.internal \
   -e DATABASE_PORT=3306 \
   -e DATABASE_NAME=arunika_coffee_users \
